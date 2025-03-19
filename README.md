@@ -42,23 +42,23 @@ Trabalho conclusão de curso Desenvolvimentos de Sistemas
         
 # Instalação e Configuração
 
-    1. Clonar o Repositório
+1. Clonar o Repositório
 
         Git bash:
             git clone https://github.com/KenjiCaique/Anxiety-TCC.git
 
-    2. Verificar as Dependências
+2. Verificar as Dependências
 
         abra o cmd na pasta 
             npm install
             # ou
             yarn install
 
-    3. Rodar o Projeto
+3. Rodar o Projeto
 
         npm start
 
-    4. Abrir o projeto na web
+4. Abrir o projeto na web
 
         http://localhost: (porta definida)
 
