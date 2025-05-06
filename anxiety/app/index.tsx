@@ -1,15 +1,17 @@
+import React from 'react';
 import { Text, View } from "react-native";
+import Welcome from './Welcome';
+import SignIn from './SignIn';
+import { StatusBar } from 'expo-status-bar';
+import { NavigationContainer } from '@react-navigation/native';
 
 export default function Index() {
   return (
-    <View
-      style={{
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-      }}
-    >
-      <Text>Edit app/index.tsx to edit this screen.</Text>
-    </View>
-  );
-}
+    <>
+      <StatusBar backgroundColor="#38A69D" />
+      <Welcome />
+    </>
+
+  )
+} 
+  

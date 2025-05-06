@@ -14,7 +14,7 @@ export default function Welcome() {
           <Animatable.Image
           animation="flipInY"
             source={require('./images/logo.png')}
-            style={{ width: '100%'}}
+            style={{ width: '30%'}}
             resizeMode="contain"
           />
         </View>
@@ -35,11 +35,11 @@ export default function Welcome() {
   const styles = StyleSheet.create({
     container:{
       flex:1,
-      backgroundColor: '#38a69d'
+      backgroundColor: '#7B339C'
     },
     containerLogo:{
       flex:2,
-      backgroundColor: '#38a69d',
+      backgroundColor: '#7B339C',
       justifyContent: 'center',
       alignItems: 'center',
     },
@@ -58,11 +58,12 @@ export default function Welcome() {
       marginBottom: 12,
     },
     text:{
+      fontSize: 18,
       color: '#a1a1a1'
     },
     button:{
       position: 'absolute',
-      backgroundColor: '#38a69d',
+      backgroundColor: '#7B339C',
       borderRadius: 50,
       paddingVertical: 8,
       width: '60%',
@@ -72,7 +73,7 @@ export default function Welcome() {
       justifyContent: 'center'
     },
     buttonText:{
-      fontSize: 18,
+      fontSize: 20,
       color: '#FFF',
       fontWeight: 'bold'
     }

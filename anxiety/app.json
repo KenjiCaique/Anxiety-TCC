@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "anxiety",
-    "slug": "anxiety",
+    "name": "Anxiety",
+    "slug": "Anxiety",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "myapp",
+    "scheme": "Anxiety",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
