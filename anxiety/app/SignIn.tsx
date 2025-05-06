@@ -1,26 +1,26 @@
-import React, { useState } from 'react';
-import { Text, View, StyleSheet, TouchableOpacity, TextInput} from "react-native";
-import * as Animatable from 'react-native-animatable';
 import Fontisto from '@expo/vector-icons/Fontisto';
-import { firebase } from './firebaseConfig';
 import { useRouter } from 'expo-router';
-
-const router = useRouter();
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import React, { useState } from 'react';
+import { StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import * as Animatable from 'react-native-animatable';
+import { auth } from './firebaseConfig';
 
 export default function SignIn() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const router = useRouter();
 
   const handleLogin = async () => {
     try {
-      await firebase.auth().signInWithEmailAndPassword(email, password);
+      await signInWithEmailAndPassword(auth, email, password);
       console.log('Usuário logado com sucesso!');
-      router.push('/home')
+      router.push('//dashboard');
     } catch (error) {
       console.error(error);
       alert('Erro ao fazer login. Verifique seu email e senha.'); 
     }
-  };
+  };  
 
   return (
     <View style={styles.container}>

@@ -1,6 +1,6 @@
-import React from 'react';
-import { Button, Text, View, StyleSheet, Image, TouchableOpacity } from "react-native";
 import { useRouter } from 'expo-router';
+import React from 'react';
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import * as Animatable from 'react-native-animatable';
 
 
