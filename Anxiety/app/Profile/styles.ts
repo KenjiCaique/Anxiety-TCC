@@ -40,15 +40,38 @@ export const styles = StyleSheet.create({
       color: '#666',
     },
     logoutButton: {
-      backgroundColor: '#7B339C',
-      paddingVertical: 12,
-      paddingHorizontal: 40,
-      borderRadius: 8,
-      marginTop: 20,
+       marginTop: 20,
+        backgroundColor: '#7b339c',
+        padding: 10,
+        borderRadius: 8,
+        alignItems: 'center',
     },
     logoutButtonText: {
       color: '#FFF',
       fontSize: 18,
       fontWeight: 'bold',
     },
-  });
+    backButton: {
+      position: 'absolute',
+      top: 40,
+      left: 20,
+      zIndex: 10,
+    },
+    changeEmailText: {
+      marginTop: 20,
+      fontSize: 16,
+      color: '#333',
+    },
+  emailButton: {
+    marginTop: 20,
+    backgroundColor: '#7b339c',
+    padding: 10,
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+
+  emailButtonText: {
+    color: '#fff',
+    fontWeight: 'bold',
+  },
+});
