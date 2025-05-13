@@ -1,9 +1,9 @@
+import { FontAwesome5, Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import React from "react";
-import { View, StyleSheet, SafeAreaView, TouchableOpacity, Image } from "react-native";
-import { styles } from './styles'
-import Svg, { Path, Ellipse } from "react-native-svg";
-import { Ionicons, FontAwesome5, MaterialCommunityIcons } from "@expo/vector-icons";
+import { SafeAreaView, TouchableOpacity, View } from "react-native";
+import Svg from "react-native-svg";
+import { styles } from './styles';
 
 export default function App() {
     const router = useRouter();
