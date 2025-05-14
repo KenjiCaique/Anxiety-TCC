@@ -71,15 +71,14 @@ export default function UserSideBar() {
         <Text style={styles.aboutText}>
           Nós somos um grupo de estudantes de Desenvolvimento de Sistemas, esse é um protótipo do nosso aplicativo para o Trabalho de Conclusão de Curso. Aproveite!
         </Text>
-
-        <Text style={styles.changeEmailText}>Deseja alterar seu e-mail?</Text>
-        <TouchableOpacity style={styles.emailButton} onPress={() => router.push('./emailChange')}>
-          <Text style={styles.emailButtonText}>Alterar E-mail</Text>
-        </TouchableOpacity>
       </View>
 
+        <TouchableOpacity style={styles.logoutButton} onPress={() => router.push('/UpdatePassword')}>
+          <Text style={styles.logoutButtonText}>Altere sua senha!</Text>
+        </TouchableOpacity>
+
       <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-        <Text style={styles.logoutButtonText}>Sair</Text>
+        <Text style={styles.logoutButtonText}>LogOut</Text>
       </TouchableOpacity>
     </Animatable.View>
   );
