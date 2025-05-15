@@ -2,7 +2,9 @@ import { FontAwesome5, Ionicons, MaterialCommunityIcons } from "@expo/vector-ico
 import { useRouter } from "expo-router";
 import React from "react";
 import { SafeAreaView, TouchableOpacity, View } from "react-native";
+
 import * as Animatable from 'react-native-animatable';
+
 import Svg from "react-native-svg";
 import { styles } from './styles';
 
