@@ -48,8 +48,8 @@ export const styles = StyleSheet.create({
       fontWeight: 'bold'
     },
     buttonRegister:{
-      padding: 14,
-      marginTop: 14,
+      padding: 10,
+      marginTop: 10,
       alignSelf: 'center'
     },
     registerText:{

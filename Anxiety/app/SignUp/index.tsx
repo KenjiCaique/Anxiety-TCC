@@ -7,6 +7,7 @@ import { doc, setDoc } from 'firebase/firestore';
 import { auth, db } from '../../firebaseConfig';
 
 
+import * as Animatable from 'react-native-animatable';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { styles } from './styles';
 
@@ -49,11 +50,11 @@ export default function SignUp() {
 
     return (
     <View style={styles.container}>
-      <View style={styles.containerHeader}>
-        <Text style={styles.message}>Cadastre-se</Text>
-      </View>
+      <Animatable.View animation='fadeInLeft' style={styles.containerHeader}>
+        <Text style={styles.message}>Cadastre-se!</Text>
+      </Animatable.View>
 
-      <View style={styles.containerForm}>
+      <Animatable.View delay={ 500 } animation='fadeInUp' style={styles.containerForm}>
         <Text style={styles.title}>Nome</Text>
         <TextInput
           style={styles.input}
@@ -115,7 +116,7 @@ export default function SignUp() {
         <TouchableOpacity style={styles.buttonRegister} onPress={() => router.push('/SignIn')}>
           <Text style={styles.registerText}>Já possui uma conta? Faça login</Text>
         </TouchableOpacity>
-      </View>
+      </Animatable.View>
     </View>
   );
 };

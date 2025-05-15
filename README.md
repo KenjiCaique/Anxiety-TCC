@@ -3,9 +3,10 @@ Trabalho conclusão de curso Desenvolvimentos de Sistemas
 
     Versão dos aplicativos utilizados:
         - Node.js versão: 22.14.0
+        - Reactive Native versão: 0.79.2 
+        - Expo versão: SDK 53
         - Visual Studio Code ultima versão sempre necessária 
-        - XAMPP versão: 8.2.12 para Windows
-        - MySQL Worckbench versão 8.0.41 para Windows
+        - Firebase (não existe versão especificada)
 
 # Índice
 
@@ -39,6 +40,11 @@ Trabalho conclusão de curso Desenvolvimentos de Sistemas
 # Tecnologias Usadas
 
         ° React Native: Framework Javascript para construção da interface do usuário
+        ° Expo: Framework do Reactive Native tendo uma grande bliblioteca e APIs
+        ° Firebase: É um banco de dados e hospedagem em nuvem da google
+        ° Node.js: Usado pelo Framework Reative native para funções de algumas blibliotecas
+        ° Visual Studio Code: É um editor de texto/código com melhor visibilidade e amplos jeitos de personalização
+
         
 # Instalação e Configuração
 
@@ -62,7 +68,41 @@ Trabalho conclusão de curso Desenvolvimentos de Sistemas
 
         http://localhost: (porta definida)
 
- 
+ # Estrutura do Projeto 
+
+
+
+ # Componentes 
+
+
+ # Rotas e Navegação
+
+
+
+ # Gerenciamento de Estado 
+ foram usados 
+
+
+
+# Scripts e Comandos
+
+
+# Testes
+
+Testes são feitos periodicamentes com base nos andamentos das versões do aplicativos. 
+
+testes realizados:
+
+Jest: Para testes unitários e de funções.
+
+React Native Testing Library: Para testes de interação com a interface do usuário.
+
+Detox: Para testes end-to-end (E2E) em dispositivos reais ou emuladores.
+
+# Contribuindo 
+
+
+# Licença
 
     
     
