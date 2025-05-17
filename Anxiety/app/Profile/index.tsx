@@ -4,7 +4,7 @@ import { auth, db } from '../../firebaseConfig';
 
 import { Text, TouchableOpacity, View } from "react-native";
 import * as Animatable from 'react-native-animatable';
-import { styles } from './styles';
+import { styles } from '../../styles/profileStyles';
 
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';

@@ -28,7 +28,7 @@ export const styles = StyleSheet.create({
     marginTop: 28,
   },
   input: {
-    height: 40,
+    height: 50,
     fontSize: 16,
     borderWidth: 1,
     borderColor: "#ccc",
@@ -37,7 +37,11 @@ export const styles = StyleSheet.create({
     marginBottom: 12,
     backgroundColor: "#fff",
     marginTop: 5,
-},
+  },
+  inputFocused: {
+  borderColor: "#7B339C",
+  },
+
   passwordContainer: {
     flexDirection: "row",
     alignItems: "center",

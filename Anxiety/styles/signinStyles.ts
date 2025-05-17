@@ -29,7 +29,7 @@ export const styles = StyleSheet.create({
     },
     input:{
       borderBottomWidth: 1,
-      height: 40,
+      height: 50,
       marginBottom: 12,
       fontSize: 16,
     },

@@ -6,7 +6,7 @@ import { SafeAreaView, TouchableOpacity, View } from "react-native";
 import * as Animatable from 'react-native-animatable';
 
 import Svg from "react-native-svg";
-import { styles } from './styles';
+import { styles } from '../../styles/dashboardStyles';
 
 export default function App() {
     const router = useRouter();
@@ -27,10 +27,10 @@ export default function App() {
         <TouchableOpacity onPress={() => router.push('/Dashboard')}>
           <FontAwesome5 name="map" size={25} color="#7B339C" />
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => router.push('/Calendario')}>
+        <TouchableOpacity onPress={() => router.push('/Calendar')}>
           <FontAwesome5 name="calendar-alt" size={25} color="#7B339C" />
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => router.push('/Modo_foco')}>
+        <TouchableOpacity onPress={() => router.push('/Pomodor')}>
           <MaterialCommunityIcons name="school-outline" size={25} color="#7B339C" />
         </TouchableOpacity>
         <TouchableOpacity onPress={() => router.push('/Respiracao')}>
