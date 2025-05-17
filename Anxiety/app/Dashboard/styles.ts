@@ -35,17 +35,25 @@ export const styles = StyleSheet.create({
     color: "#a1a1a1", // Cor do texto
   },
 
-  button: {
-    position: "absolute",
-    backgroundColor: "#7B339C", // Cor de fundo do botão
-    borderRadius: 50, // Botão arredondado
-    paddingVertical: 8,
-    width: "60%",
-    alignSelf: "center",
-    bottom: "15%", // Posicionamento do botão na parte inferior
-    alignItems: "center",
-    justifyContent: "center",
-  },
+ button: {
+  position: "absolute",
+  backgroundColor: "#7B339C",
+  borderRadius: 50,
+  paddingVertical: 8,
+  width: "60%",
+  alignSelf: "center",
+  bottom: "15%",
+  alignItems: "center",
+  justifyContent: "center",
+
+  // Profundidade
+  elevation: 4, // Android
+  shadowColor: "#000", // iOS
+  shadowOffset: { width: 0, height: 2 },
+  shadowOpacity: 0.3,
+  shadowRadius: 3.84,
+},
+
 
   buttonText: {
     fontSize: 20,
@@ -62,6 +70,12 @@ export const styles = StyleSheet.create({
     alignItems: "center",
     borderWidth: 1,
     borderColor: "#000",
+
+    elevation: 4, // Android
+    shadowColor: "#000", // iOS
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 3.84,
   },
 
   dayCompleted: {
@@ -96,13 +110,13 @@ export const styles = StyleSheet.create({
 
   progressBarModoFoco: {
     height: "100%",
-    backgroundColor: "#5E2D82",
+    backgroundColor: "#a400F0",
   },
 
   startBalloon: {
     position: "absolute",
     bottom: -40,
-    backgroundColor: "#7B339C",
+    backgroundColor: "#9121C4",
     paddingHorizontal: 15,
     paddingVertical: 5,
     borderRadius: 15,

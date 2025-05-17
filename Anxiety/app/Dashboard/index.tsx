@@ -1,6 +1,6 @@
 import { FontAwesome5, Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   SafeAreaView,
   TouchableOpacity,
@@ -13,9 +13,14 @@ import {
   Alert,
   KeyboardAvoidingView,
   Platform,
+  ActivityIndicator,
 } from "react-native";
 import * as Animatable from "react-native-animatable";
 import { styles } from "./styles";
+
+import { db } from "../../firebaseConfig";
+import { doc, setDoc, getDoc } from "firebase/firestore";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
 
 const screenWidth = Dimensions.get("window").width;
 
@@ -30,20 +35,16 @@ interface Day {
 
 export default function Dashboard() {
   const router = useRouter();
+  const auth = getAuth();
 
-  const [totalDays, setTotalDays] = useState();
-  const [respiracaoCount, setRespiracaoCount] = useState();
-  const [modoFocoCount, setModoFocoCount] = useState();
+  const [userId, setUserId] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  const [days, setDays] = useState<Day[]>(
-    Array.from({ length: totalDays }, (_, i) => ({
-      number: totalDays - i,
-      status: i === 0 ? "unlocked" : "locked",
-      progressoRespiracao: 0,
-      progressoModoFoco: 0,
-    }))
-  );
+  const [totalDays, setTotalDays] = useState(0);
+  const [respiracaoCount, setRespiracaoCount] = useState(0);
+  const [modoFocoCount, setModoFocoCount] = useState(0);
 
+  const [days, setDays] = useState<Day[]>([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [configModalVisible, setConfigModalVisible] = useState(false);
   const [inputDays, setInputDays] = useState("");
@@ -51,16 +52,57 @@ export default function Dashboard() {
   const [inputModoFoco, setInputModoFoco] = useState("");
   const [selectedDayIndex, setSelectedDayIndex] = useState<number | null>(null);
 
-  function handleDayPress(dayNumber: number) {
-    const index = days.findIndex((d) => d.number === dayNumber);
-    if (days[index].status === "unlocked") {
-      const newDays = days.slice();
-      newDays[index].status = "completed";
-      if (index + 1 < days.length && newDays[index + 1].status === "locked") {
-        newDays[index + 1].status = "unlocked";
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        router.replace("/SignIn");
+        return;
       }
-      setDays(newDays);
+
+      setUserId(user.uid);
+      await carregarProgresso(user.uid);
+      setLoading(false);
+    });
+
+    return unsubscribe;
+  }, []);
+
+  async function carregarProgresso(uid: string) {
+    try {
+      const docRef = doc(db, "users", uid);
+      const docSnap = await getDoc(docRef);
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        setTotalDays(data.totalDays);
+        setRespiracaoCount(data.respiracaoCount);
+        setModoFocoCount(data.modoFocoCount);
+        setDays(data.days);
+      }
+    } catch (error) {
+      console.error("Erro ao carregar progresso do Firebase:", error);
     }
+  }
+
+  async function salvarProgressoNoFirebase(updatedDays: Day[]) {
+    try {
+      if (!userId) return;
+      await setDoc(doc(db, "users", userId), {
+        days: updatedDays,
+        totalDays,
+        respiracaoCount,
+        modoFocoCount,
+      });
+    } catch (error) {
+      console.error("Erro ao salvar progresso no Firebase:", error);
+    }
+  }
+
+  if (loading) {
+    return (
+      <View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}> 
+        <ActivityIndicator size="large" color="#7B339C" />
+      </View>
+    );
   }
 
   function openProgressModal(dayIndex: number) {
@@ -100,24 +142,44 @@ export default function Dashboard() {
       progressoModoFoco: 0,
     }));
     setDays(newDays);
-
+    salvarProgressoNoFirebase(newDays);
     setConfigModalVisible(false);
   }
 
-  const verticalSpacing = 90;
+function handleDayPress(dayNumber: number) {
+  if (!days || days.length === 0) return; 
 
+  const index = days.findIndex((d) => d.number === dayNumber);
+  if (index === -1) return; 
+
+  if (days[index].status === "unlocked") {
+    const newDays = days.slice();
+    newDays[index].status = "completed";
+
+    if (index + 1 < days.length && newDays[index + 1].status === "locked") {
+      newDays[index + 1].status = "unlocked";
+    }
+    setDays(newDays);
+    salvarProgressoNoFirebase(newDays);
+  }
+}
+
+  const verticalSpacing = 90;
   const getPosition = (index: number) => {
     const baseX = screenWidth / 2;
     const amplitudeX = 90;
     const stepY = 80;
-
     const y = stepY * index + 35 + (index === 0 ? 15 : 0);
     const x = baseX + amplitudeX * Math.sin((index * Math.PI) / 6);
     return { x, y };
   };
 
-  const currentDayIndex = days.findIndex((d) => d.status === "unlocked");
-  const totalHeight = days.length * verticalSpacing + 80;
+  // Garante que days seja sempre um array
+  const safeDays = days ?? []; 
+
+  const currentDayIndex = safeDays.findIndex((d) => d.status === "unlocked");
+  const totalHeight = safeDays.length * verticalSpacing + 80;
+
 
   return (
     <SafeAreaView style={styles.container}>
@@ -126,33 +188,29 @@ export default function Dashboard() {
           <Ionicons name="person-circle" size={45} color="white" />
         </TouchableOpacity>
       </Animatable.View>
-
       <ScrollView
-  style={{ flex: 1 }}
-  contentContainerStyle={{
-    minHeight: totalHeight + 50,
-    paddingBottom: 60,  // Ajuste o padding se necessário
+        style={{ flex: 1 }}
+        contentContainerStyle={{
+          minHeight: (days?.length ?? 0) * 90 + 130,
+          paddingBottom: 60,
   }}
   showsVerticalScrollIndicator={true}
 >
-  <View style={{ flex: 1, position: "relative", minHeight: totalHeight }}>
-    {days.map((day, i) => {
-      const pos = getPosition(i);
-      const isCurrent = i === currentDayIndex;
-      const isClickable = day.status !== "locked";
+        <View style={{ flex: 1, position: "relative", minHeight: (days ?? []).length * 90 + 80 }}>
+          {(days ?? []).map((day, i) => {
+          const x = screenWidth / 2 + 90 * Math.sin((i * Math.PI) / 6) - 30;
+          const y = 80 * i + 35 + (i === 0 ? 15 : 0);
+          const currentIndex = (days ?? []).findIndex((d) => d.status === "unlocked");
+          const isCurrent = i === currentIndex;
+          const isClickable = day.status !== "locked";
 
       return (
-        <Animatable.View
-        animation="fadeInUp"
-        delay={i * 50}  // Ajuste o delay para um valor menor, ou aumente um pouco
-        key={day.number}
-        style={{
-       position: "absolute",
-       left: pos.x - 30,
-        top: pos.y,
-        alignItems: "center",
-        }}
-        >
+<Animatable.View
+                animation="fadeInUp"
+                delay={i * 50}
+                key={day.number}
+                style={{ position: "absolute", left: x, top: y, alignItems: "center" }}
+              >
           <TouchableOpacity
             onPress={() => {
               if (isClickable) openProgressModal(i);
@@ -204,12 +262,6 @@ export default function Dashboard() {
               </View>
             )}
           </TouchableOpacity>
-
-          {isCurrent && (
-            <View style={styles.startBalloon}>
-              <Text style={styles.startText}>START</Text>
-            </View>
-          )}
         </Animatable.View>
       );
     })}
@@ -220,10 +272,10 @@ export default function Dashboard() {
         <TouchableOpacity onPress={openConfigModal}>
           <FontAwesome5 name="map" size={25} color="#7B339C" />
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => router.push("/Calendario")}>
+        <TouchableOpacity onPress={() => router.push("/Calendar")}>
           <FontAwesome5 name="calendar-alt" size={25} color="#7B339C" />
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => router.push("/Modo_foco")}>
+        <TouchableOpacity onPress={() => router.push("/Pomodor")}>
           <MaterialCommunityIcons
             name="school-outline"
             size={25}
@@ -235,7 +287,6 @@ export default function Dashboard() {
         </TouchableOpacity>
       </Animatable.View>
 
-      {/* Modal de progresso do dia */}
       {selectedDayIndex !== null && (
         <Modal visible={modalVisible} transparent animationType="fade">
           <KeyboardAvoidingView
@@ -258,6 +309,7 @@ export default function Dashboard() {
                     const newDays = [...days];
                     newDays[selectedDayIndex].progressoRespiracao += 1;
                     setDays(newDays);
+                    salvarProgressoNoFirebase(newDays);
                   }
                   setModalVisible(false);
                 }}
@@ -274,11 +326,12 @@ export default function Dashboard() {
                 disabled={days[selectedDayIndex].progressoModoFoco >= modoFocoCount}
                 onPress={() => {
                   if (days[selectedDayIndex].progressoModoFoco < modoFocoCount) {
-                    router.push("/Modo_foco");
+                    router.push("/Pomodor");
 
                     const newDays = [...days];
                     newDays[selectedDayIndex].progressoModoFoco += 1;
                     setDays(newDays);
+                    salvarProgressoNoFirebase(newDays);
                   }
                   setModalVisible(false);
                 }}
