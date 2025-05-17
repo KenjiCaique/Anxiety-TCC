@@ -16,9 +16,9 @@ import {
   ActivityIndicator,
 } from "react-native";
 import * as Animatable from "react-native-animatable";
-import { styles } from "./styles";
+import { styles } from '../../styles/dashboardStyles';
 
-import { db } from "../../firebaseConfig";
+import { db } from "../lib/firebaseConfig";
 import { doc, setDoc, getDoc } from "firebase/firestore";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 
