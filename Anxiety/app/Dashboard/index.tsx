@@ -341,7 +341,7 @@ function handleDayPress(dayNumber: number) {
                     styles.modalButtonDisabled,
                 ]}
               >
-                <Text>Modo Foco</Text>
+                <Text>Pomodoro</Text>
               </TouchableOpacity>
 
               <TouchableOpacity
@@ -383,7 +383,7 @@ function handleDayPress(dayNumber: number) {
 
             <TextInput
               keyboardType="number-pad"
-              placeholder="Qtd. vezes Modo Foco (0-20)"
+              placeholder="Qtd. vezes Podoro (0-20)"
               value={inputModoFoco}
               onChangeText={setInputModoFoco}
               style={styles.modalInput}
