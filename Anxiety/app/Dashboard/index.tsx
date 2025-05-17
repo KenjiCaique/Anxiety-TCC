@@ -31,9 +31,9 @@ interface Day {
 export default function Dashboard() {
   const router = useRouter();
 
-  const [totalDays, setTotalDays] = useState(31);
-  const [respiracaoCount, setRespiracaoCount] = useState(3);
-  const [modoFocoCount, setModoFocoCount] = useState(3);
+  const [totalDays, setTotalDays] = useState();
+  const [respiracaoCount, setRespiracaoCount] = useState();
+  const [modoFocoCount, setModoFocoCount] = useState();
 
   const [days, setDays] = useState<Day[]>(
     Array.from({ length: totalDays }, (_, i) => ({
@@ -128,90 +128,93 @@ export default function Dashboard() {
       </Animatable.View>
 
       <ScrollView
-        style={{ flex: 1 }}
-        contentContainerStyle={{ minHeight: totalHeight + 50, paddingBottom: 60 }}
-        showsVerticalScrollIndicator={true}
-      >
-        <View style={{ flex: 1, position: "relative", minHeight: totalHeight }}>
-          {days.map((day, i) => {
-            const pos = getPosition(i);
-            const isCurrent = i === currentDayIndex;
-            const isClickable = day.status !== "locked";
+  style={{ flex: 1 }}
+  contentContainerStyle={{
+    minHeight: totalHeight + 50,
+    paddingBottom: 60,  // Ajuste o padding se necessário
+  }}
+  showsVerticalScrollIndicator={true}
+>
+  <View style={{ flex: 1, position: "relative", minHeight: totalHeight }}>
+    {days.map((day, i) => {
+      const pos = getPosition(i);
+      const isCurrent = i === currentDayIndex;
+      const isClickable = day.status !== "locked";
 
-            return (
-              <Animatable.View
-                animation="fadeInUp"
-                delay={i * 40}
-                key={day.number}
-                style={{
-                  position: "absolute",
-                  left: pos.x - 30,
-                  top: pos.y,
-                  alignItems: "center",
-                }}
+      return (
+        <Animatable.View
+        animation="fadeInUp"
+        delay={i * 50}  // Ajuste o delay para um valor menor, ou aumente um pouco
+        key={day.number}
+        style={{
+       position: "absolute",
+       left: pos.x - 30,
+        top: pos.y,
+        alignItems: "center",
+        }}
+        >
+          <TouchableOpacity
+            onPress={() => {
+              if (isClickable) openProgressModal(i);
+            }}
+            disabled={!isClickable}
+            style={[
+              styles.dayCircle,
+              day.status === "completed" && styles.dayCompleted,
+              day.status === "locked" && styles.dayLocked,
+            ]}
+          >
+            {day.status === "completed" ? (
+              <FontAwesome5 name="check" size={24} color="white" />
+            ) : (
+              <Text
+                style={[
+                  styles.dayNumber,
+                  day.status === "locked" && styles.dayNumberLocked,
+                ]}
               >
-                <TouchableOpacity
-                  onPress={() => {
-                    if (isClickable) openProgressModal(i);
-                  }}
-                  disabled={!isClickable}
+                {day.number}
+              </Text>
+            )}
+
+            {day.status !== "locked" && (
+              <View style={styles.progressContainer}>
+                <View
                   style={[
-                    styles.dayCircle,
-                    day.status === "completed" && styles.dayCompleted,
-                    day.status === "locked" && styles.dayLocked,
+                    styles.progressBarRespiracao,
+                    {
+                      width:
+                        respiracaoCount === 0
+                          ? 0
+                          : (day.progressoRespiracao / respiracaoCount) * 60,
+                    },
                   ]}
-                >
-                  {day.status === "completed" ? (
-                    <FontAwesome5 name="check" size={24} color="white" />
-                  ) : (
-                    <Text
-                      style={[
-                        styles.dayNumber,
-                        day.status === "locked" && styles.dayNumberLocked,
-                      ]}
-                    >
-                      {day.number}
-                    </Text>
-                  )}
+                />
+                <View
+                  style={[
+                    styles.progressBarModoFoco,
+                    {
+                      width:
+                        modoFocoCount === 0
+                          ? 0
+                          : (day.progressoModoFoco / modoFocoCount) * 60,
+                    },
+                  ]}
+                />
+              </View>
+            )}
+          </TouchableOpacity>
 
-                  {day.status !== "locked" && (
-                    <View style={styles.progressContainer}>
-                      <View
-                        style={[
-                          styles.progressBarRespiracao,
-                          {
-                            width:
-                              respiracaoCount === 0
-                                ? 0
-                                : (day.progressoRespiracao / respiracaoCount) * 60,
-                          },
-                        ]}
-                      />
-                      <View
-                        style={[
-                          styles.progressBarModoFoco,
-                          {
-                            width:
-                              modoFocoCount === 0
-                                ? 0
-                                : (day.progressoModoFoco / modoFocoCount) * 60,
-                          },
-                        ]}
-                      />
-                    </View>
-                  )}
-                </TouchableOpacity>
-
-                {isCurrent && (
-                  <View style={styles.startBalloon}>
-                    <Text style={styles.startText}>START</Text>
-                  </View>
-                )}
-              </Animatable.View>
-            );
-          })}
-        </View>
-      </ScrollView>
+          {isCurrent && (
+            <View style={styles.startBalloon}>
+              <Text style={styles.startText}>START</Text>
+            </View>
+          )}
+        </Animatable.View>
+      );
+    })}
+  </View>
+</ScrollView>
 
       <Animatable.View animation="fadeInUp" style={styles.botoes}>
         <TouchableOpacity onPress={openConfigModal}>

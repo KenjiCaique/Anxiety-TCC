@@ -3,14 +3,54 @@ import { StyleSheet } from "react-native";
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f5e5ff",
+    backgroundColor: "#7B339C", // Alterei a cor de fundo para um tom roxo semelhante ao exemplo
   },
 
-  topBar: {
-    height: 60,
-    paddingHorizontal: 20,
+  containerLogo: {
+    flex: 2,
+    backgroundColor: "#7B339C", // Cor de fundo para a logo
     justifyContent: "center",
-    backgroundColor: "#7B339C",
+    alignItems: "center",
+  },
+
+  containerForm: {
+    flex: 1,
+    backgroundColor: "#FFF", // Fundo branco para a área do formulário
+    borderTopLeftRadius: 25,
+    borderTopRightRadius: 25,
+    paddingStart: "5%", // Alinha o formulário com um padding lateral
+    paddingEnd: "5%", // Igual ao exemplo
+  },
+
+  title: {
+    fontSize: 24, // Tamanho da fonte do título
+    fontWeight: "bold",
+    marginTop: 28,
+    marginBottom: 12,
+    color: "#7B339C", // Cor do título semelhante ao seu design
+  },
+
+  text: {
+    fontSize: 18,
+    color: "#a1a1a1", // Cor do texto
+  },
+
+  button: {
+    position: "absolute",
+    backgroundColor: "#7B339C", // Cor de fundo do botão
+    borderRadius: 50, // Botão arredondado
+    paddingVertical: 8,
+    width: "60%",
+    alignSelf: "center",
+    bottom: "15%", // Posicionamento do botão na parte inferior
+    alignItems: "center",
+    justifyContent: "center",
+  },
+
+  buttonText: {
+    fontSize: 20,
+    color: "#FFF", // Cor do texto do botão
+    fontWeight: "bold",
   },
 
   dayCircle: {
@@ -21,26 +61,21 @@ export const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     borderWidth: 1,
-    borderColor: "#7B339C",
+    borderColor: "#000",
   },
 
   dayCompleted: {
-    backgroundColor: "#7B339C",
+    backgroundColor: "#7B339C", // Cor para o dia concluído
   },
 
   dayLocked: {
-    backgroundColor: "#bdbdbd",
+    backgroundColor: "#bdbdbd", // Cor para dias bloqueados
   },
 
   dayNumber: {
     fontSize: 20,
     fontWeight: "bold",
     color: "#7B339C",
-  },
-
-  dayNumberLocked: {
-    color: "#7B339C",
-    opacity: 0.5,
   },
 
   progressContainer: {
@@ -81,7 +116,7 @@ export const styles = StyleSheet.create({
   botoes: {
     height: 60,
     paddingHorizontal: 40,
-    backgroundColor: "#f5e5ff",
+    backgroundColor: "#fff",
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
