@@ -1,6 +1,6 @@
 import { doc, getDoc } from 'firebase/firestore';
 import React, { useEffect, useState } from 'react';
-import { auth, db } from '../../firebaseConfig';
+import { auth, db } from '../lib/firebaseConfig';
 
 import { Text, TouchableOpacity, View } from "react-native";
 import * as Animatable from 'react-native-animatable';

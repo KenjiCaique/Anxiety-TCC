@@ -14,7 +14,7 @@ import {
   View
 } from 'react-native';
 import * as Animatable from 'react-native-animatable';
-import { auth } from '../../firebaseConfig';
+import { auth } from '../lib/firebaseConfig';
 
 export default function PasswordChangeScreen() {
   const router = useRouter();

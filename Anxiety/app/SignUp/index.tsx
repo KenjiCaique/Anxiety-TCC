@@ -12,8 +12,8 @@ import {
 } from "react-native";
 import * as Animatable from "react-native-animatable";
 import Icon from "react-native-vector-icons/Ionicons";
-import { auth, db } from "../../firebaseConfig";
 import { styles } from "../../styles/signupStyles";
+import { auth, db } from "../lib/firebaseConfig";
 
 export default function SignUp() {
   const [name, setName] = useState<string>("");
