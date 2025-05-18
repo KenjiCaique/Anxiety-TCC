@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { Alert, Modal, Text, TextInput, TouchableOpacity, View } from "react-native";
 import * as Animatable from "react-native-animatable";
 import { Calendar, DateData, LocaleConfig } from "react-native-calendars";
-import { auth, db } from "../lib/firebaseConfig";
+import { auth, db } from "../../firebaseConfig";
 
 import { ptBR } from "@/localeCalendarConfig";
 import { styles } from "../../styles/calendarStyles";

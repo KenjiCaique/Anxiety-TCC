@@ -6,7 +6,7 @@ import * as Animatable from 'react-native-animatable';
 import { styles } from '../../styles/signinStyles';
 
 import { signInWithEmailAndPassword } from 'firebase/auth';
-import { auth } from '../lib/firebaseConfig';
+import { auth } from '../../firebaseConfig';
 
 
 export default function SignIn() {
