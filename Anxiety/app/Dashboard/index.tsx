@@ -1,26 +1,26 @@
 import { FontAwesome5, Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
+  ActivityIndicator,
+  Alert,
+  Dimensions,
+  KeyboardAvoidingView,
+  Modal,
+  Platform,
   SafeAreaView,
+  ScrollView,
+  Text,
+  TextInput,
   TouchableOpacity,
   View,
-  Text,
-  ScrollView,
-  Dimensions,
-  Modal,
-  TextInput,
-  Alert,
-  KeyboardAvoidingView,
-  Platform,
-  ActivityIndicator,
 } from "react-native";
 import * as Animatable from "react-native-animatable";
 import { styles } from '../../styles/dashboardStyles';
 
-import { db } from "../lib/firebaseConfig";
-import { doc, setDoc, getDoc } from "firebase/firestore";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { doc, getDoc, setDoc } from "firebase/firestore";
+import { db } from "../../firebaseConfig";
 
 const screenWidth = Dimensions.get("window").width;
 
@@ -52,6 +52,8 @@ export default function Dashboard() {
   const [inputModoFoco, setInputModoFoco] = useState("");
   const [selectedDayIndex, setSelectedDayIndex] = useState<number | null>(null);
 
+  
+
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (!user) {
@@ -71,27 +73,75 @@ export default function Dashboard() {
     try {
       const docRef = doc(db, "users", uid);
       const docSnap = await getDoc(docRef);
+  
+      const hoje = new Date();
+      const hojeStr = hoje.toISOString().split("T")[0]; // formato YYYY-MM-DD
+  
       if (docSnap.exists()) {
         const data = docSnap.data();
+        const lastAccess = data.lastAccessDate || hojeStr;
+  
         setTotalDays(data.totalDays);
         setRespiracaoCount(data.respiracaoCount);
         setModoFocoCount(data.modoFocoCount);
         setDays(data.days);
+  
+        // Verifica se passou pelo menos 1 dia
+        if (lastAccess !== hojeStr) {
+          const updatedDays = [...data.days];
+          const nextLockedIndex = updatedDays.findIndex(
+            (d) => d.status === "locked"
+          );
+  
+          // Se houver um dia travado, desbloqueia ele
+          if (nextLockedIndex !== -1) {
+            updatedDays[nextLockedIndex].status = "unlocked";
+            setDays(updatedDays);
+            await setDoc(docRef, {
+              ...data,
+              days: updatedDays,
+              lastAccessDate: hojeStr,
+            });
+          } else {
+            // Só atualiza a data, se não tiver mais dias para desbloquear
+            await setDoc(docRef, {
+              ...data,
+              lastAccessDate: hojeStr,
+            });
+          }
+        }
+  
+      } else {
+        // Documento não existe: cria novo
+        await setDoc(docRef, {
+          days: [],
+          totalDays: 0,
+          respiracaoCount: 0,
+          modoFocoCount: 0,
+          lastAccessDate: hojeStr,
+        });
       }
     } catch (error) {
       console.error("Erro ao carregar progresso do Firebase:", error);
     }
   }
+  
 
-  async function salvarProgressoNoFirebase(updatedDays: Day[]) {
+  async function salvarProgressoNoFirebase(
+    updatedDays: Day[],
+    newRespCount?: number,
+    newModoFocoCount?: number
+  ) {
+    if (!userId) return;
+  
     try {
-      if (!userId) return;
       await setDoc(doc(db, "users", userId), {
         days: updatedDays,
         totalDays,
-        respiracaoCount,
-        modoFocoCount,
-      });
+        respiracaoCount: newRespCount ?? respiracaoCount,
+        modoFocoCount: newModoFocoCount ?? modoFocoCount,
+        lastAccessDate: new Date().toISOString().split("T")[0],
+      });      
     } catch (error) {
       console.error("Erro ao salvar progresso no Firebase:", error);
     }

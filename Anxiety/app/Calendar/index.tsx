@@ -7,7 +7,7 @@ import * as Animatable from "react-native-animatable";
 import { Calendar, DateData, LocaleConfig } from "react-native-calendars";
 import { auth, db } from "../../firebaseConfig";
 
-import { ptBR } from "@/localeCalendarConfig";
+import { ptBR } from "../../localeCalendarConfig";
 import { styles } from "../../styles/calendarStyles";
 
 // Configuração do calendário em pt-BR

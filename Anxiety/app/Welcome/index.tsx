@@ -17,7 +17,7 @@ export default function Welcome() {
     <View style={styles.containerLogo}>
       <Animatable.Image
       animation="flipInY"
-        source={require('@/images/logo.png')}
+        source={require('../../images/logo.png')}
         style={{ width: '30%'}}
         resizeMode="contain"
       />
