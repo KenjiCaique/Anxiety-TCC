@@ -130,22 +130,25 @@ export default function Dashboard() {
   async function salvarProgressoNoFirebase(
     updatedDays: Day[],
     newRespCount?: number,
-    newModoFocoCount?: number
+    newModoFocoCount?: number,
+    newTotalDays?: number
   ) {
     if (!userId) return;
   
     try {
       await setDoc(doc(db, "users", userId), {
         days: updatedDays,
-        totalDays,
+        totalDays: newTotalDays ?? totalDays,
         respiracaoCount: newRespCount ?? respiracaoCount,
         modoFocoCount: newModoFocoCount ?? modoFocoCount,
         lastAccessDate: new Date().toISOString().split("T")[0],
-      });      
+      }, { merge: true });
     } catch (error) {
       console.error("Erro ao salvar progresso no Firebase:", error);
     }
   }
+  
+
 
   if (loading) {
     return (

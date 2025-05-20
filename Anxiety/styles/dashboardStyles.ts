@@ -3,190 +3,140 @@ import { StyleSheet } from "react-native";
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#7B339C", // Alterei a cor de fundo para um tom roxo semelhante ao exemplo
+    backgroundColor: "#F3F0FF",
   },
 
-  containerLogo: {
-    flex: 2,
-    backgroundColor: "#7B339C", // Cor de fundo para a logo
-    justifyContent: "center",
+  topBar: {
+    height: 60,
+    backgroundColor: "#7B339C",
+    flexDirection: "row",
+    justifyContent: "flex-end",
     alignItems: "center",
-  },
-
-  containerForm: {
-    flex: 1,
-    backgroundColor: "#FFF", // Fundo branco para a área do formulário
-    borderTopLeftRadius: 25,
-    borderTopRightRadius: 25,
-    paddingStart: "5%", // Alinha o formulário com um padding lateral
-    paddingEnd: "5%", // Igual ao exemplo
-  },
-
-  title: {
-    fontSize: 24, // Tamanho da fonte do título
-    fontWeight: "bold",
-    marginTop: 28,
-    marginBottom: 12,
-    color: "#7B339C", // Cor do título semelhante ao seu design
-  },
-
-  text: {
-    fontSize: 18,
-    color: "#a1a1a1", // Cor do texto
-  },
-
- button: {
-  position: "absolute",
-  backgroundColor: "#7B339C",
-  borderRadius: 50,
-  paddingVertical: 8,
-  width: "60%",
-  alignSelf: "center",
-  bottom: "15%",
-  alignItems: "center",
-  justifyContent: "center",
-
-  // Profundidade
-  elevation: 4, // Android
-  shadowColor: "#000", // iOS
-  shadowOffset: { width: 0, height: 2 },
-  shadowOpacity: 0.3,
-  shadowRadius: 3.84,
-},
-
-
-  buttonText: {
-    fontSize: 20,
-    color: "#FFF", // Cor do texto do botão
-    fontWeight: "bold",
+    paddingHorizontal: 15,
   },
 
   dayCircle: {
     width: 60,
     height: 60,
     borderRadius: 30,
-    backgroundColor: "#D7BFF7",
+    backgroundColor: "#7B339C",
     justifyContent: "center",
     alignItems: "center",
-    borderWidth: 1,
-    borderColor: "#000",
-
-    elevation: 4, // Android
-    shadowColor: "#000", // iOS
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 3.84,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
   },
 
   dayCompleted: {
-    backgroundColor: "#7B339C", // Cor para o dia concluído
+    backgroundColor: "#43B77A",
   },
 
   dayLocked: {
-    backgroundColor: "#bdbdbd", // Cor para dias bloqueados
+    backgroundColor: "#D3D3D3",
   },
 
   dayNumber: {
     fontSize: 20,
     fontWeight: "bold",
-    color: "#7B339C",
+    color: "#fff",
+  },
+
+  dayNumberLocked: {
+    color: "#777",
   },
 
   progressContainer: {
     position: "absolute",
-    bottom: 5,
-    height: 6,
-    width: 60,
-    borderRadius: 3,
-    backgroundColor: "#ddd",
-    overflow: "hidden",
+    bottom: -6,
     flexDirection: "row",
+    width: 60,
+    height: 5,
+    backgroundColor: "#E0D8F7",
+    borderRadius: 3,
+    overflow: "hidden",
   },
 
   progressBarRespiracao: {
-    height: "100%",
-    backgroundColor: "#7B339C",
+    height: 5,
+    backgroundColor: "#00BFFF",
   },
 
   progressBarModoFoco: {
-    height: "100%",
-    backgroundColor: "#a400F0",
-  },
-
-  startBalloon: {
-    position: "absolute",
-    bottom: -40,
-    backgroundColor: "#9121C4",
-    paddingHorizontal: 15,
-    paddingVertical: 5,
-    borderRadius: 15,
-  },
-
-  startText: {
-    color: "white",
-    fontWeight: "bold",
+    height: 5,
+    backgroundColor: "#FFA500",
   },
 
   botoes: {
+    position: "absolute",
+    bottom: 15,
+    left: 20,
+    right: 20,
     height: 60,
-    paddingHorizontal: 40,
+    borderRadius: 15,
     backgroundColor: "#fff",
     flexDirection: "row",
-    justifyContent: "space-between",
+    justifyContent: "space-around",
     alignItems: "center",
-    borderTopWidth: 1,
-    borderTopColor: "#d3cce3",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 6,
+    elevation: 10,
   },
 
   modalOverlay: {
     flex: 1,
-    backgroundColor: "rgba(0,0,0,0.5)",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
     justifyContent: "center",
     alignItems: "center",
+    padding: 20,
   },
 
   modalContent: {
-    backgroundColor: "white",
-    padding: 20,
-    borderRadius: 12,
-    width: "80%",
+    backgroundColor: "#fff",
+    padding: 25,
+    borderRadius: 20,
+    width: "100%",
+    maxWidth: 350,
     alignItems: "center",
   },
 
   modalTitle: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: "bold",
     marginBottom: 15,
     color: "#7B339C",
   },
 
   modalButton: {
+    backgroundColor: "#7B339C",
     paddingVertical: 12,
-    paddingHorizontal: 25,
-    borderRadius: 10,
-    backgroundColor: "#D7BFF7",
-    marginBottom: 12,
+    paddingHorizontal: 20,
+    borderRadius: 12,
+    marginTop: 10,
     width: "100%",
     alignItems: "center",
   },
 
   modalButtonDisabled: {
-    backgroundColor: "#CCC",
+    backgroundColor: "#ccc",
   },
 
   modalCancelButton: {
-    marginTop: 10,
+    marginTop: 15,
+    padding: 10,
+    alignItems: "center",
   },
 
   modalInput: {
-    width: "100%",
-    height: 45,
     borderWidth: 1,
-    borderColor: "#7B339C",
+    borderColor: "#ccc",
     borderRadius: 10,
-    marginBottom: 12,
-    paddingHorizontal: 15,
-    color: "#7B339C",
-    fontWeight: "bold",
+    padding: 10,
+    width: "100%",
+    marginVertical: 8,
+    color: "#000",
   },
 });
