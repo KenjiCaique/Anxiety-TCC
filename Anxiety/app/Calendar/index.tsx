@@ -207,7 +207,7 @@ export default function CalendarScreen() {
               style={styles.input}
             />
 
-            <TouchableOpacity onPress={handleSave} style={[styles.saveButton, { backgroundColor: "purple", marginTop: 16 }]}>
+            <TouchableOpacity onPress={handleSave} style={[styles.saveButton, { backgroundColor: "green", marginTop: 16 }]}>
               <Text style={styles.saveButtonText}>Salvar</Text>
             </TouchableOpacity>
 

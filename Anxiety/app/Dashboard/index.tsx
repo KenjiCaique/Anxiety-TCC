@@ -1,4 +1,5 @@
 import { FontAwesome5, Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
+import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
@@ -13,14 +14,28 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  View,
+  View
 } from "react-native";
 import * as Animatable from "react-native-animatable";
 import { styles } from '../../styles/dashboardStyles';
 
+
 import { getAuth, onAuthStateChanged } from "firebase/auth";
-import { doc, getDoc, setDoc } from "firebase/firestore";
+import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore"; // <- lembre de importar updateDoc
 import { db } from "../../firebaseConfig";
+
+async function salvarProgressoNoUsuario(userId: string, trilhaId: string, progressoData: any) {
+  const userRef = doc(db, "users", userId);
+
+  try {
+    await updateDoc(userRef, {
+      [`progressoTrilhas.${trilhaId}`]: progressoData
+    });
+    console.log("Progresso da trilha salvo no usuário com sucesso!");
+  } catch (error) {
+    console.error("Erro ao salvar progresso no usuário:", error);
+  }
+}
 
 const screenWidth = Dimensions.get("window").width;
 
@@ -71,60 +86,66 @@ export default function Dashboard() {
 
   async function carregarProgresso(uid: string) {
     try {
-      const docRef = doc(db, "users", uid);
-      const docSnap = await getDoc(docRef);
+      const trilhaRef = doc(db, "trilhas", uid);
+      const docSnap = await getDoc(trilhaRef);
   
       const hoje = new Date();
-      const hojeStr = hoje.toISOString().split("T")[0]; // formato YYYY-MM-DD
+      const hojeStr = hoje.toISOString().split("T")[0];
   
       if (docSnap.exists()) {
         const data = docSnap.data();
         const lastAccess = data.lastAccessDate || hojeStr;
   
-        setTotalDays(data.totalDays);
-        setRespiracaoCount(data.respiracaoCount);
-        setModoFocoCount(data.modoFocoCount);
-        setDays(data.days);
+        setTotalDays(data.totalDays ?? 0);
+        setRespiracaoCount(data.respiracaoCount ?? 0);
+        setModoFocoCount(data.modoFocoCount ?? 0);
+        setDays(data.days ?? []);
   
-        // Verifica se passou pelo menos 1 dia
         if (lastAccess !== hojeStr) {
-          const updatedDays = [...data.days];
-          const nextLockedIndex = updatedDays.findIndex(
-            (d) => d.status === "locked"
-          );
-  
-          // Se houver um dia travado, desbloqueia ele
+          const updatedDays = [...(data.days ?? [])];
+          const nextLockedIndex = updatedDays.findIndex((d) => d.status === "locked");
+        
           if (nextLockedIndex !== -1) {
             updatedDays[nextLockedIndex].status = "unlocked";
             setDays(updatedDays);
-            await setDoc(docRef, {
+            console.log("Desbloqueando dia", updatedDays[nextLockedIndex].number);
+            await setDoc(trilhaRef, {
               ...data,
               days: updatedDays,
               lastAccessDate: hojeStr,
-            });
+            }, { merge: true });
           } else {
-            // Só atualiza a data, se não tiver mais dias para desbloquear
-            await setDoc(docRef, {
+            await setDoc(trilhaRef, {
               ...data,
               lastAccessDate: hojeStr,
-            });
+            }, { merge: true });
           }
         }
+        
   
       } else {
-        // Documento não existe: cria novo
-        await setDoc(docRef, {
+        // Se não existe trilha ainda, cria com dados iniciais
+        const dadosIniciais = {
           days: [],
           totalDays: 0,
           respiracaoCount: 0,
           modoFocoCount: 0,
           lastAccessDate: hojeStr,
-        });
+        };
+  
+        setTotalDays(0);
+        setRespiracaoCount(0);
+        setModoFocoCount(0);
+        setDays([]);
+  
+        await setDoc(trilhaRef, dadosIniciais);
       }
+  
     } catch (error) {
-      console.error("Erro ao carregar progresso do Firebase:", error);
+      console.error("Erro ao carregar progresso da trilha:", error);
     }
   }
+  
   
 
   async function salvarProgressoNoFirebase(
@@ -135,21 +156,29 @@ export default function Dashboard() {
   ) {
     if (!userId) return;
   
+    const fallbackTotal = typeof newTotalDays === "number" ? newTotalDays : (totalDays || 0);
+    const fallbackResp = typeof newRespCount === "number" ? newRespCount : (respiracaoCount || 0);
+    const fallbackFoco = typeof newModoFocoCount === "number" ? newModoFocoCount : (modoFocoCount || 0);
+  
+    const progressoData = {
+      days: updatedDays,
+      totalDays: fallbackTotal,
+      respiracaoCount: fallbackResp,
+      modoFocoCount: fallbackFoco,
+      lastAccessDate: new Date().toISOString().split("T")[0],
+    };
+  
     try {
-      await setDoc(doc(db, "users", userId), {
-        days: updatedDays,
-        totalDays: newTotalDays ?? totalDays,
-        respiracaoCount: newRespCount ?? respiracaoCount,
-        modoFocoCount: newModoFocoCount ?? modoFocoCount,
-        lastAccessDate: new Date().toISOString().split("T")[0],
-      }, { merge: true });
+      await setDoc(doc(db, "trilhas", userId), progressoData, { merge: true });
+      await salvarProgressoNoUsuario(userId, userId, progressoData); 
+      
+  
     } catch (error) {
-      console.error("Erro ao salvar progresso no Firebase:", error);
-    }
+      console.error("Erro ao salvar progresso na trilha:", error);
+    } 
   }
   
-
-
+  
   if (loading) {
     return (
       <View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}> 
@@ -236,11 +265,15 @@ function handleDayPress(dayNumber: number) {
 
   return (
     <SafeAreaView style={styles.container}>
-      <Animatable.View animation="fadeInLeft" style={styles.topBar}>
-        <TouchableOpacity onPress={() => router.push("/Profile")}>
-          <Ionicons name="person-circle" size={45} color="white" />
-        </TouchableOpacity>
-      </Animatable.View>
+     <Animatable.View animation="fadeInLeft" style={styles.topBar}>
+  <LinearGradient
+    colors={['#6a11cb', '#2575fc']} // Seu gradiente aqui
+    style={StyleSheet.absoluteFill} // Ocupa todo o espaço do topBar
+  />
+  <TouchableOpacity onPress={() => router.push("/Profile")}>
+    <Ionicons name="person-circle" size={45} color="white" />
+  </TouchableOpacity>
+</Animatable.View>
       <ScrollView
         style={{ flex: 1 }}
         contentContainerStyle={{
