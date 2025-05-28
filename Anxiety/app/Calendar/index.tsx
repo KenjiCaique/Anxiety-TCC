@@ -1,5 +1,6 @@
-import { Feather } from "@expo/vector-icons";
+import { Feather, Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
+import { useRouter } from 'expo-router';
 import { collection, doc, getDocs, query, setDoc } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { Alert, Modal, Text, TextInput, TouchableOpacity, View } from "react-native";
@@ -7,14 +8,16 @@ import * as Animatable from "react-native-animatable";
 import { Calendar, DateData, LocaleConfig } from "react-native-calendars";
 import { auth, db } from "../../firebaseConfig";
 
+
 import { ptBR } from "../../localeCalendarConfig";
 import { styles } from "../../styles/calendarStyles";
 
-// Configuração do calendário em pt-BR
+
 LocaleConfig.locales["pt-br"] = ptBR;
 LocaleConfig.defaultLocale = "pt-br";
 
 export default function CalendarScreen() {
+  const router = useRouter();
   const navigation = useNavigation();
   const [day, setDay] = useState<DateData>();
   const [moodColor, setMoodColor] = useState("");
@@ -26,7 +29,6 @@ export default function CalendarScreen() {
   const userId = auth.currentUser?.uid;
 
   useEffect(() => {
-    // Carregar dados salvos do Firestore quando o componente monta
     const fetchMarkedDates = async () => {
       if (!userId) return;
 
@@ -122,7 +124,9 @@ export default function CalendarScreen() {
         date: day.dateString,
         mood: moodColor,
         note,
-      });
+      },
+        { merge: true }
+      );
       setUnsavedChanges(false);
       setModalVisible(false);
       alert("Salvo com sucesso!");
@@ -137,12 +141,11 @@ export default function CalendarScreen() {
 
   return (
     <Animatable.View animation="fadeInUp" duration={600} style={styles.container}>
-      {/* Botão de voltar */}
-      <TouchableOpacity onPress={handleBackPress} style={{ marginBottom: 16 }}>
-        <Feather name="arrow-left" size={24} color="#e8e8e8" />
-      </TouchableOpacity>
 
-      {/* Calendário */}
+      <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
+        <Ionicons name="arrow-back" size={24} color="#fff" />
+      </TouchableOpacity>
+      
       <Calendar
         style={styles.calendar}
         markedDates={marked}

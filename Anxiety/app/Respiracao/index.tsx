@@ -122,7 +122,8 @@ export default function App() {
   const moodColor = phase === "Inspirar" ? "#6FC3DF" : "#9AD3BC";
 
   return (
-    <View
+
+    <View       
       style={[
         styles.container,
         { backgroundColor: phase === "Inspirar" ? "#D0E6F1" : "#D8ECDD" },

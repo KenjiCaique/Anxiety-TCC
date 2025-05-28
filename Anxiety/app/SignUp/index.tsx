@@ -51,10 +51,10 @@ export default function SignUp() {
       );
       const user = userCredential.user;
 
-      await setDoc(doc(db, "users", user.uid), { name, email });
+      await setDoc(doc(db, "users", user.uid), { name, email }, { merge: true});
 
       Alert.alert("Sucesso", "Conta criada com sucesso!");
-      router.push("/Dashboard");
+      router.push("/SignIn");
     } catch (error: any) {
       console.error(error);
       Alert.alert("Erro ao cadastrar", error.message);

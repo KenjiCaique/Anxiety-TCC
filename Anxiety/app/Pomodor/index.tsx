@@ -1,9 +1,12 @@
+import { Ionicons } from "@expo/vector-icons";
+import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { Modal, Text, TouchableOpacity, View } from 'react-native';
 import { AnimatedCircularProgress } from 'react-native-circular-progress';
 import { styles } from '../../styles/pomodorStyles';
 
 export default function Pomodor() {
+    const router = useRouter();
     const [segundosRestantes, setSegundosRestantes] = useState(1500);
     const [rodando, setRodando] = useState(false);
     const [progresso, setProgresso] = useState(0);
@@ -28,7 +31,7 @@ export default function Pomodor() {
         }
 
         if (rodando && segundosRestantes === 0) {
-            setCiclos((prev) => prev + 1); 
+            setCiclos((prev) => prev + 1);
             setRodando(false);
         }
 
@@ -58,6 +61,11 @@ export default function Pomodor() {
 
     return (
         <View style={styles.container}>
+
+            <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
+                <Ionicons name="arrow-back" size={24} color="#fff" />
+            </TouchableOpacity>
+            
             <Text style={styles.titulo}>POMODORO</Text>
             <Text style={styles.ciclos}>Ciclos: {ciclos}</Text>
 
@@ -86,7 +94,7 @@ export default function Pomodor() {
                         { color: rodando ? 'tomato' : 'green' }
                     ]}
                 >
-                        {rodando ? "Pausar" : "Iniciar"}
+                    {rodando ? "Pausar" : "Iniciar"}
                 </Text>
             </TouchableOpacity>
 

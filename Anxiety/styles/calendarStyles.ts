@@ -3,12 +3,13 @@ import { StyleSheet } from "react-native";
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#320339",
+    backgroundColor: "#160119",
     padding: 24,
   },
 
   calendar: {
     backgroundColor: "transparent",
+    top: 70,
   },
 
   calendarHeader: {
@@ -114,5 +115,11 @@ export const styles = StyleSheet.create({
     color: "white",
     fontWeight: "bold",
     fontSize: 16,
+  },
+  backButton: {
+    position: 'absolute',
+    top: 40,
+    left: 20,
+    zIndex: 10,
   },
 });
