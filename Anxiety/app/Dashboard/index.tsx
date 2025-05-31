@@ -1,5 +1,4 @@
-import { FontAwesome5, Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
-import { useRouter } from "expo-router";
+// React & React Native
 import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
@@ -14,27 +13,24 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  View
+  View,
 } from "react-native";
+
+// Expo & Navegação
+import { FontAwesome5, Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
 import * as Animatable from "react-native-animatable";
-import { styles } from '../../styles/dashboardStyles';
 
-
+// Firebase
 import { getAuth, onAuthStateChanged } from "firebase/auth";
-import { doc, getDoc, setDoc } from "firebase/firestore"; // <- lembre de importar updateDoc
+import { doc, getDoc, setDoc } from "firebase/firestore";
 import { db } from "../../firebaseConfig";
 
+// Estilos
+import { styles } from "../../styles/dashboardStyles";
 
-async function salvarProgressoNoUsuario(userId: string, trilhaId: string, progressoData: any) {
-  const progressoRef = doc(db, "users", userId, "progressoTrilhas", trilhaId);
+// --- Constantes e tipos ---
 
-  try {
-    await setDoc(progressoRef, progressoData, { merge: true });
-    console.log("Progresso da trilha salvo na subcoleção com sucesso!");
-  } catch (error) {
-    console.error("Erro ao salvar progresso no usuário:", error);
-  }
-}
 const screenWidth = Dimensions.get("window").width;
 
 type DayStatus = "locked" | "unlocked" | "completed";
@@ -46,26 +42,57 @@ interface Day {
   progressoModoFoco: number;
 }
 
+interface ProgressoData {
+  days: Day[];
+  totalDays: number;
+  respiracaoCount: number;
+  modoFocoCount: number;
+  lastAccessDate: string; // ISO string yyyy-mm-dd
+}
+
+// --- Funções auxiliares ---
+
+// Salva o progresso na subcoleção do usuário no Firestore, usando merge para não sobrescrever dados existentes
+async function salvarProgressoNoUsuario(
+  userId: string,
+  trilhaId: string,
+  progressoData: ProgressoData
+) {
+  const progressoRef = doc(db, "users", userId, "progressoTrilhas", trilhaId);
+  try {
+    await setDoc(progressoRef, progressoData, { merge: true });
+    console.log("Progresso da trilha salvo com sucesso");
+  } catch (error) {
+    console.error("Erro ao salvar progresso no usuário:", error);
+  }
+}
+
+// --- Componente principal ---
+
 export default function Dashboard() {
   const router = useRouter();
   const auth = getAuth();
 
+  // Estados
   const [userId, setUserId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   const [totalDays, setTotalDays] = useState(0);
   const [respiracaoCount, setRespiracaoCount] = useState(0);
   const [modoFocoCount, setModoFocoCount] = useState(0);
-
   const [days, setDays] = useState<Day[]>([]);
+
   const [modalVisible, setModalVisible] = useState(false);
   const [configModalVisible, setConfigModalVisible] = useState(false);
+
   const [inputDays, setInputDays] = useState("");
   const [inputRespiracao, setInputRespiracao] = useState("");
   const [inputModoFoco, setInputModoFoco] = useState("");
   const [selectedDayIndex, setSelectedDayIndex] = useState<number | null>(null);
+
   const [profileImageUrl, setProfileImageUrl] = useState<string | null>(null);
 
+  // --- Efeito para monitorar autenticação e carregar dados ---
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (!user) {
@@ -90,16 +117,16 @@ export default function Dashboard() {
     return unsubscribe;
   }, []);
 
+  // --- Função para carregar progresso da trilha ---
   async function carregarProgresso(uid: string) {
     try {
       const trilhaRef = doc(db, "users", uid, "progressoTrilhas", "trilhaPrincipal");
       const docSnap = await getDoc(trilhaRef);
 
-      const hoje = new Date();
-      const hojeStr = hoje.toISOString().split("T")[0];
+      const hojeStr = new Date().toISOString().split("T")[0];
 
       if (docSnap.exists()) {
-        const data = docSnap.data();
+        const data = docSnap.data() as ProgressoData;
         const lastAccess = data.lastAccessDate || hojeStr;
 
         setTotalDays(data.totalDays ?? 0);
@@ -107,6 +134,7 @@ export default function Dashboard() {
         setModoFocoCount(data.modoFocoCount ?? 0);
         setDays(data.days ?? []);
 
+        // Se último acesso foi diferente de hoje, desbloqueia próximo dia
         if (lastAccess !== hojeStr) {
           const updatedDays = [...(data.days ?? [])];
           const nextLockedIndex = updatedDays.findIndex((d) => d.status === "locked");
@@ -114,24 +142,18 @@ export default function Dashboard() {
           if (nextLockedIndex !== -1) {
             updatedDays[nextLockedIndex].status = "unlocked";
             setDays(updatedDays);
-            console.log("Desbloqueando dia", updatedDays[nextLockedIndex].number);
-            await setDoc(trilhaRef, {
-              ...data,
-              days: updatedDays,
-              lastAccessDate: hojeStr,
-            }, { merge: true });
+            await setDoc(
+              trilhaRef,
+              { ...data, days: updatedDays, lastAccessDate: hojeStr },
+              { merge: true }
+            );
           } else {
-            await setDoc(trilhaRef, {
-              ...data,
-              lastAccessDate: hojeStr,
-            }, { merge: true });
+            await setDoc(trilhaRef, { ...data, lastAccessDate: hojeStr }, { merge: true });
           }
         }
-
-
       } else {
-        // Se não existe trilha ainda, cria com dados iniciais
-        const dadosIniciais = {
+        // Se não existir, cria dados iniciais
+        const dadosIniciais: ProgressoData = {
           days: [],
           totalDays: 0,
           respiracaoCount: 0,
@@ -146,14 +168,12 @@ export default function Dashboard() {
 
         await setDoc(trilhaRef, dadosIniciais);
       }
-
     } catch (error) {
-      console.error("Erro ao carregar progresso da trilha:", error);
+      console.error("Erro ao carregar progresso:", error);
     }
   }
 
-
-
+  // --- Função para salvar progresso no Firestore ---
   async function salvarProgressoNoFirebase(
     updatedDays: Day[],
     newRespCount?: number,
@@ -162,36 +182,22 @@ export default function Dashboard() {
   ) {
     if (!userId) return;
 
-    const fallbackTotal = typeof newTotalDays === "number" ? newTotalDays : (totalDays || 0);
-    const fallbackResp = typeof newRespCount === "number" ? newRespCount : (respiracaoCount || 0);
-    const fallbackFoco = typeof newModoFocoCount === "number" ? newModoFocoCount : (modoFocoCount || 0);
-
-    const progressoData = {
+    const progressoData: ProgressoData = {
       days: updatedDays,
-      totalDays: fallbackTotal,
-      respiracaoCount: fallbackResp,
-      modoFocoCount: fallbackFoco,
+      totalDays: newTotalDays ?? totalDays,
+      respiracaoCount: newRespCount ?? respiracaoCount,
+      modoFocoCount: newModoFocoCount ?? modoFocoCount,
       lastAccessDate: new Date().toISOString().split("T")[0],
     };
 
     try {
       await salvarProgressoNoUsuario(userId, "trilhaPrincipal", progressoData);
-
-
-
     } catch (error) {
-      console.error("Erro ao salvar progresso na trilha:", error);
+      console.error("Erro ao salvar progresso:", error);
     }
   }
 
-
-  if (loading) {
-    return (
-      <View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
-        <ActivityIndicator size="large" color="#7B339C" />
-      </View>
-    );
-  }
+  // --- Handlers e funções auxiliares ---
 
   function openProgressModal(dayIndex: number) {
     setSelectedDayIndex(dayIndex);
@@ -211,9 +217,15 @@ export default function Dashboard() {
     const qFoco = parseInt(inputModoFoco, 10);
 
     if (
-      isNaN(qDays) || qDays <= 0 || qDays > 100 ||
-      isNaN(qResp) || qResp < 0 || qResp > 20 ||
-      isNaN(qFoco) || qFoco < 0 || qFoco > 20
+      isNaN(qDays) ||
+      qDays <= 0 ||
+      qDays > 100 ||
+      isNaN(qResp) ||
+      qResp < 0 ||
+      qResp > 20 ||
+      isNaN(qFoco) ||
+      qFoco < 0 ||
+      qFoco > 20
     ) {
       Alert.alert("Erro", "Digite valores válidos:\nDias: 1-100\nRespiração e Modo Foco: 0-20");
       return;
@@ -223,19 +235,20 @@ export default function Dashboard() {
     setRespiracaoCount(qResp);
     setModoFocoCount(qFoco);
 
-    const newDays = Array.from({ length: qDays }, (_, i) => ({
+    const newDays: Day[] = Array.from({ length: qDays }, (_, i) => ({
       number: qDays - i,
       status: i === 0 ? "unlocked" : "locked",
       progressoRespiracao: 0,
       progressoModoFoco: 0,
     }));
+
     setDays(newDays);
     salvarProgressoNoFirebase(newDays);
     setConfigModalVisible(false);
   }
 
   function handleDayPress(dayNumber: number) {
-    if (!days || days.length === 0) return;
+    if (days.length === 0) return;
 
     const index = days.findIndex((d) => d.number === dayNumber);
     if (index === -1) return;
@@ -247,56 +260,48 @@ export default function Dashboard() {
       if (index + 1 < days.length && newDays[index + 1].status === "locked") {
         newDays[index + 1].status = "unlocked";
       }
+
       setDays(newDays);
       salvarProgressoNoFirebase(newDays);
     }
   }
 
-  const verticalSpacing = 90;
-  const getPosition = (index: number) => {
-    const baseX = screenWidth / 2;
-    const amplitudeX = 90;
-    const stepY = 80;
-    const y = stepY * index + 35 + (index === 0 ? 15 : 0);
-    const x = baseX + amplitudeX * Math.sin((index * Math.PI) / 6);
-    return { x, y };
-  };
+  // --- Renderização ---
 
-
-  const safeDays = days ?? [];
-
-  const currentDayIndex = safeDays.findIndex((d) => d.status === "unlocked");
-  const totalHeight = safeDays.length * verticalSpacing + 80;
-
+  if (loading) {
+    return (
+      <View style={[styles.container, { justifyContent: "center", alignItems: "center" }]}>
+        <ActivityIndicator size="large" color="#7B339C" />
+      </View>
+    );
+  }
 
   return (
     <SafeAreaView style={styles.container}>
+      {/* Barra superior com perfil */}
       <Animatable.View animation="fadeInLeft" style={styles.topBar}>
         <TouchableOpacity onPress={() => router.push("/Profile")}>
           {profileImageUrl ? (
-            <Image
-              source={{ uri: profileImageUrl }}
-              style={{ width: 45, height: 45, borderRadius: 22.5 }}
-            />
+            <Image source={{ uri: profileImageUrl }} style={{ width: 45, height: 45, borderRadius: 22.5 }} />
           ) : (
             <Ionicons name="person-circle" size={45} color="#7B339C" />
           )}
         </TouchableOpacity>
       </Animatable.View>
+
+      {/* Lista de dias em scroll vertical */}
       <ScrollView
         style={{ flex: 1 }}
         contentContainerStyle={{
-          minHeight: (days?.length ?? 0) * 90 + 130,
+          minHeight: days.length * 90 + 130,
           paddingBottom: 60,
         }}
-        showsVerticalScrollIndicator={true}
+        showsVerticalScrollIndicator
       >
-        <View style={{ flex: 1, position: "relative", minHeight: (days ?? []).length * 90 + 80 }}>
-          {(days ?? []).map((day, i) => {
+        <View style={{ flex: 1, position: "relative", minHeight: days.length * 90 + 80 }}>
+          {days.map((day, i) => {
             const x = screenWidth / 2 + 90 * Math.sin((i * Math.PI) / 6) - 30;
             const y = 80 * i + 35 + (i === 0 ? 15 : 0);
-            const currentIndex = (days ?? []).findIndex((d) => d.status === "unlocked");
-            const isCurrent = i === currentIndex;
             const isClickable = day.status !== "locked";
 
             return (
@@ -320,12 +325,7 @@ export default function Dashboard() {
                   {day.status === "completed" ? (
                     <FontAwesome5 name="check" size={24} color="white" />
                   ) : (
-                    <Text
-                      style={[
-                        styles.dayNumber,
-                        day.status === "locked" && styles.dayNumberLocked,
-                      ]}
-                    >
+                    <Text style={[styles.dayNumber, day.status === "locked" && styles.dayNumberLocked]}>
                       {day.number}
                     </Text>
                   )}
@@ -363,6 +363,7 @@ export default function Dashboard() {
         </View>
       </ScrollView>
 
+      {/* Botões de navegação */}
       <Animatable.View animation="fadeInUp" style={styles.botoes}>
         <TouchableOpacity onPress={openConfigModal}>
           <FontAwesome5 name="map" size={25} color="#7B339C" />
@@ -371,129 +372,138 @@ export default function Dashboard() {
           <FontAwesome5 name="calendar-alt" size={25} color="#7B339C" />
         </TouchableOpacity>
         <TouchableOpacity onPress={() => router.push("/Pomodor")}>
-          <MaterialCommunityIcons
-            name="school-outline"
-            size={25}
-            color="#7B339C"
-          />
+          <MaterialCommunityIcons name="school-outline" size={25} color="#7B339C" />
         </TouchableOpacity>
         <TouchableOpacity onPress={() => router.push("/Respiracao")}>
-          <MaterialCommunityIcons name="clock" size={25} color="#7B339C" />
+          <MaterialCommunityIcons name="clock-outline" size={25} color="#7B339C" />
         </TouchableOpacity>
       </Animatable.View>
 
-      {selectedDayIndex !== null && (
-        <Modal visible={modalVisible} transparent animationType="fade">
-          <KeyboardAvoidingView
-            behavior={Platform.OS === "ios" ? "padding" : undefined}
-            style={styles.modalOverlay}
-          >
-            <View style={styles.modalContent}>
-              <Text style={styles.modalTitle}>Escolha uma ação</Text>
-
-              <TouchableOpacity
-                disabled={
-                  days[selectedDayIndex].progressoRespiracao >= respiracaoCount
-                }
-                onPress={() => {
-                  if (
-                    days[selectedDayIndex].progressoRespiracao < respiracaoCount
-                  ) {
-                    router.push("/Respiracao");
-
-                    const newDays = [...days];
-                    newDays[selectedDayIndex].progressoRespiracao += 1;
-                    setDays(newDays);
-                    salvarProgressoNoFirebase(newDays);
-                  }
-                  setModalVisible(false);
-                }}
-                style={[
-                  styles.modalButton,
-                  days[selectedDayIndex].progressoRespiracao >= respiracaoCount &&
-                  styles.modalButtonDisabled,
-                ]}
-              >
-                <Text>Respiração</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                disabled={days[selectedDayIndex].progressoModoFoco >= modoFocoCount}
-                onPress={() => {
-                  if (days[selectedDayIndex].progressoModoFoco < modoFocoCount) {
-                    router.push("/Pomodor");
-
-                    const newDays = [...days];
-                    newDays[selectedDayIndex].progressoModoFoco += 1;
-                    setDays(newDays);
-                    salvarProgressoNoFirebase(newDays);
-                  }
-                  setModalVisible(false);
-                }}
-                style={[
-                  styles.modalButton,
-                  days[selectedDayIndex].progressoModoFoco >= modoFocoCount &&
-                  styles.modalButtonDisabled,
-                ]}
-              >
-                <Text>Pomodoro</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                onPress={() => setModalVisible(false)}
-                style={styles.modalCancelButton}
-              >
-                <Text>Cancelar</Text>
-              </TouchableOpacity>
-            </View>
-          </KeyboardAvoidingView>
-        </Modal>
-      )}
-
-      <Modal visible={configModalVisible} transparent animationType="fade">
+      {/* Modal de progresso do dia */}
+      <Modal visible={modalVisible} transparent animationType="fade">
         <KeyboardAvoidingView
-          behavior={Platform.OS === "ios" ? "padding" : undefined}
-          style={styles.modalOverlay}
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          style={styles.modalContainer}
         >
           <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Configurar Quantidades</Text>
+            <Text style={styles.modalTitle}>Progresso do Dia {selectedDayIndex !== null ? days[selectedDayIndex].number : ""}</Text>
 
             <TextInput
-              keyboardType="number-pad"
-              placeholder="Quantidade de dias"
-              value={inputDays}
-              onChangeText={setInputDays}
-              style={styles.modalInput}
-              placeholderTextColor="#BFA8E8"
-            />
-
-            <TextInput
-              keyboardType="number-pad"
-              placeholder="Qtd. vezes Respiração (0-20)"
+              style={styles.input}
+              keyboardType="numeric"
+              placeholder={`Respiração (0 a ${respiracaoCount})`}
               value={inputRespiracao}
               onChangeText={setInputRespiracao}
-              style={styles.modalInput}
-              placeholderTextColor="#BFA8E8"
+              maxLength={2}
             />
-
             <TextInput
-              keyboardType="number-pad"
-              placeholder="Qtd. vezes Podoro (0-20)"
+              style={styles.input}
+              keyboardType="numeric"
+              placeholder={`Modo Foco (0 a ${modoFocoCount})`}
               value={inputModoFoco}
               onChangeText={setInputModoFoco}
-              style={styles.modalInput}
-              placeholderTextColor="#BFA8E8"
+              maxLength={2}
             />
-            <TouchableOpacity onPress={confirmConfig} style={styles.modalButton}>
-              <Text>Confirmar</Text>
-            </TouchableOpacity>
 
-            <TouchableOpacity
-              onPress={() => setConfigModalVisible(false)}
-              style={styles.modalCancelButton}
-            >
-              <Text>Cancelar</Text>
-            </TouchableOpacity>
+            <View style={styles.modalButtons}>
+              <TouchableOpacity
+                style={[styles.modalButton, { backgroundColor: "#7B339C" }]}
+                onPress={async () => {
+                  if (selectedDayIndex === null) return;
+
+                  const resp = parseInt(inputRespiracao, 10);
+                  const foco = parseInt(inputModoFoco, 10);
+
+                  if (
+                    isNaN(resp) ||
+                    resp < 0 ||
+                    resp > respiracaoCount ||
+                    isNaN(foco) ||
+                    foco < 0 ||
+                    foco > modoFocoCount
+                  ) {
+                    Alert.alert(
+                      "Erro",
+                      `Digite valores válidos:\nRespiração: 0-${respiracaoCount}\nModo Foco: 0-${modoFocoCount}`
+                    );
+                    return;
+                  }
+
+                  const newDays = [...days];
+                  newDays[selectedDayIndex].progressoRespiracao = resp;
+                  newDays[selectedDayIndex].progressoModoFoco = foco;
+
+                  setDays(newDays);
+                  await salvarProgressoNoFirebase(newDays);
+
+                  setModalVisible(false);
+                  setInputRespiracao("");
+                  setInputModoFoco("");
+                }}
+              >
+                <Text style={styles.modalButtonText}>Salvar</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={[styles.modalButton, { backgroundColor: "#ccc" }]}
+                onPress={() => setModalVisible(false)}
+              >
+                <Text style={styles.modalButtonText}>Cancelar</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </KeyboardAvoidingView>
+      </Modal>
+
+      {/* Modal de configuração da trilha */}
+      <Modal visible={configModalVisible} transparent animationType="fade">
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          style={styles.modalContainer}
+        >
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Configurar Trilha</Text>
+
+            <TextInput
+              style={styles.input}
+              keyboardType="numeric"
+              placeholder="Quantidade de dias (1-100)"
+              value={inputDays}
+              onChangeText={setInputDays}
+              maxLength={3}
+            />
+            <TextInput
+              style={styles.input}
+              keyboardType="numeric"
+              placeholder="Quantidade Respiração (0-20)"
+              value={inputRespiracao}
+              onChangeText={setInputRespiracao}
+              maxLength={2}
+            />
+            <TextInput
+              style={styles.input}
+              keyboardType="numeric"
+              placeholder="Quantidade Modo Foco (0-20)"
+              value={inputModoFoco}
+              onChangeText={setInputModoFoco}
+              maxLength={2}
+            />
+
+            <View style={styles.modalButtons}>
+              <TouchableOpacity
+                style={[styles.modalButton, { backgroundColor: "#7B339C" }]}
+                onPress={confirmConfig}
+              >
+                <Text style={styles.modalButtonText}>Confirmar</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={[styles.modalButton, { backgroundColor: "#ccc" }]}
+                onPress={() => setConfigModalVisible(false)}
+              >
+                <Text style={styles.modalButtonText}>Cancelar</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </KeyboardAvoidingView>
       </Modal>

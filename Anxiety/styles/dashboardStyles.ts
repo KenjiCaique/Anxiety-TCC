@@ -1,6 +1,7 @@
 import { StyleSheet } from "react-native";
 
 export const styles = StyleSheet.create({
+  // ---------------------- TELA GERAL ----------------------
   container: {
     flex: 1,
     backgroundColor: "#F3F0FF",
@@ -11,6 +12,37 @@ export const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     paddingHorizontal: 15,
+  },
+
+  // ---------------------- DIAS ----------------------
+  daysContainer: {
+    flexDirection: "row",
+    paddingHorizontal: 15,
+    paddingVertical: 10,
+    marginTop: 20,
+    backgroundColor: "#fff",
+    borderRadius: 15,
+    marginHorizontal: 15,
+    elevation: 5, // Android
+    shadowColor: "#000", // iOS
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.1,
+    shadowRadius: 6,
+  },
+
+  dayButton: {
+    marginHorizontal: 8,
+    alignItems: "center",
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    backgroundColor: "#F3F0FF",
+    borderRadius: 10,
+    minWidth: 50,
+    shadowColor: "#7B339C",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.15,
+    shadowRadius: 3,
+    elevation: 3,
   },
 
   dayCircle: {
@@ -45,6 +77,7 @@ export const styles = StyleSheet.create({
     color: "#777",
   },
 
+  // ---------------------- PROGRESSO ----------------------
   progressContainer: {
     position: "absolute",
     bottom: -6,
@@ -66,6 +99,14 @@ export const styles = StyleSheet.create({
     backgroundColor: "#FFA500",
   },
 
+  progressText: {
+    fontSize: 12,
+    color: "#7B339C",
+    marginTop: 6,
+    fontWeight: "600",
+  },
+
+  // ---------------------- BOTÕES INFERIORES ----------------------
   botoes: {
     position: "absolute",
     bottom: 15,
@@ -84,44 +125,7 @@ export const styles = StyleSheet.create({
     elevation: 10,
   },
 
-  // NOVOS ESTILOS PARA O BLOCO DE DIAS - ajuste de posicionamento e estilo
-  daysContainer: {
-    flexDirection: "row",
-    paddingHorizontal: 15,
-    paddingVertical: 10,
-    marginTop: 20,
-    backgroundColor: "#fff",
-    borderRadius: 15,
-    elevation: 5, // sombra Android
-    shadowColor: "#000", // sombra iOS
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.1,
-    shadowRadius: 6,
-    marginHorizontal: 15,
-  },
-
-  dayButton: {
-    marginHorizontal: 8,
-    alignItems: "center",
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    backgroundColor: "#F3F0FF",
-    borderRadius: 10,
-    minWidth: 50,
-    shadowColor: "#7B339C",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.15,
-    shadowRadius: 3,
-    elevation: 3,
-  },
-
-  progressText: {
-    fontSize: 12,
-    color: "#7B339C",
-    marginTop: 6,
-    fontWeight: "600",
-  },
-
+  // ---------------------- MODAL ----------------------
   modalOverlay: {
     flex: 1,
     backgroundColor: "rgba(0, 0, 0, 0.5)",
@@ -154,7 +158,12 @@ export const styles = StyleSheet.create({
     marginTop: 10,
     width: "100%",
     alignItems: "center",
-    color: 'white',
+  },
+
+  modalButtonText: {
+    color: "#fff",
+    fontWeight: "600",
+    fontSize: 16,
   },
 
   modalButtonDisabled: {
@@ -177,6 +186,7 @@ export const styles = StyleSheet.create({
     color: "#000",
   },
 
+  // ---------------------- OUTROS ----------------------
   profile: {
     top: 15,
     left: 10,
