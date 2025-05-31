@@ -17,6 +17,8 @@ export default function Pomodor() {
     const [tempMinutos, setTempMinutos] = useState(25);
     const [tempSegundos, setTempSegundos] = useState(0);
 
+    const [helpModalVisible, setHelpModalVisible] = useState(false);
+
     useEffect(() => {
         let intervalo;
 
@@ -62,10 +64,28 @@ export default function Pomodor() {
     return (
         <View style={styles.container}>
 
+            <TouchableOpacity
+                style={{
+                    position: "absolute",
+                    top: 50,
+                    right: 20,
+                    backgroundColor: "#8A2BE2",
+                    width: 40,
+                    height: 40,
+                    borderRadius: 20,
+                    justifyContent: "center",
+                    alignItems: "center",
+                    zIndex: 10,
+                }}
+                onPress={() => setHelpModalVisible(true)}
+            >
+                <Text style={{ color: "#fff", fontWeight: "bold", fontSize: 24 }}>?</Text>
+            </TouchableOpacity>
+
             <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
                 <Ionicons name="arrow-back" size={24} color="#fff" />
             </TouchableOpacity>
-            
+
             <Text style={styles.titulo}>POMODORO</Text>
             <Text style={styles.ciclos}>Ciclos: {ciclos}</Text>
 
@@ -132,6 +152,53 @@ export default function Pomodor() {
 
                         <TouchableOpacity style={styles.botaoSalvar} onPress={aplicarNovoTempo}>
                             <Text style={styles.textoBotao}>Salvar</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            </Modal>
+            <Modal
+                animationType="slide"
+                transparent={true}
+                visible={helpModalVisible}
+                onRequestClose={() => setHelpModalVisible(false)}
+            >
+                <View style={{
+                    flex: 1,
+                    backgroundColor: "rgba(0,0,0,0.5)",
+                    justifyContent: "center",
+                    alignItems: "center",
+                }}>
+                    <View style={{
+                        backgroundColor: "white",
+                        borderRadius: 20,
+                        padding: 30,
+                        width: "80%",
+                        alignItems: "center",
+                        shadowColor: "#000",
+                        shadowOffset: { width: 0, height: 2 },
+                        shadowOpacity: 0.25,
+                        shadowRadius: 4,
+                        elevation: 5,
+                    }}>
+                        <Text style={{ fontSize: 22, fontWeight: "bold", marginBottom: 15 }}>
+                            Sobre esta tela
+                        </Text>
+                        <Text style={{ fontSize: 16, textAlign: "center", marginBottom: 20 }}>
+                            Esta tela ajuda você a melhorar a concentração durante o estudo, utilizando a técnica Pomodoro, que alterna períodos de foco e descanso para aliviar a ansiedade durante o estudo e aumentar a produtividade.
+                        </Text>
+
+                        <TouchableOpacity
+                            onPress={() => setHelpModalVisible(false)}
+                            style={{
+                                backgroundColor: "#2f0635",
+                                borderRadius: 10,
+                                paddingVertical: 10,
+                                paddingHorizontal: 20,
+                            }}
+                        >
+                            <Text style={{ color: "white", fontWeight: "bold", fontSize: 16 }}>
+                                Fechar
+                            </Text>
                         </TouchableOpacity>
                     </View>
                 </View>

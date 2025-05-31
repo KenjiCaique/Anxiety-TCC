@@ -145,7 +145,12 @@ export default function CalendarScreen() {
       <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
         <Ionicons name="arrow-back" size={24} color="#fff" />
       </TouchableOpacity>
-      
+
+      <View style={{ marginTop:100, marginBottom: 20, paddingHorizontal: 24 }}>
+        <Text style={styles.titleH1}>Como foi seu dia hoje?</Text>
+        <Text style={styles.titleH2}>Registre seu humor e pensamentos</Text>
+      </View>
+
       <Calendar
         style={styles.calendar}
         markedDates={marked}
@@ -210,13 +215,17 @@ export default function CalendarScreen() {
               style={styles.input}
             />
 
-            <TouchableOpacity onPress={handleSave} style={[styles.saveButton, { backgroundColor: "green", marginTop: 16 }]}>
-              <Text style={styles.saveButtonText}>Salvar</Text>
-            </TouchableOpacity>
+            <View style={styles.modalButtons}>
+              <TouchableOpacity onPress={handleSave} style={styles.actionBox}>
+                <Ionicons name="checkmark" size={24} color="#fff" />
+                <Text style={styles.buttonLabel}>Salvar</Text>
+              </TouchableOpacity>
 
-            <TouchableOpacity onPress={() => setModalVisible(false)} style={[styles.cancelButton, { marginTop: 8 }]}>
-              <Text style={styles.cancelButtonText}>Cancelar</Text>
-            </TouchableOpacity>
+              <TouchableOpacity onPress={() => setModalVisible(false)} style={[styles.actionBox, { backgroundColor: "#C94C4C" }]}>
+                <Ionicons name="close" size={24} color="#fff" />
+                <Text style={styles.buttonLabel}>Cancelar</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
       </Modal>

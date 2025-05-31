@@ -5,6 +5,7 @@ import {
   ActivityIndicator,
   Alert,
   Dimensions,
+  Image,
   KeyboardAvoidingView,
   Modal,
   Platform,
@@ -63,8 +64,7 @@ export default function Dashboard() {
   const [inputRespiracao, setInputRespiracao] = useState("");
   const [inputModoFoco, setInputModoFoco] = useState("");
   const [selectedDayIndex, setSelectedDayIndex] = useState<number | null>(null);
-
-
+  const [profileImageUrl, setProfileImageUrl] = useState<string | null>(null);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -74,6 +74,15 @@ export default function Dashboard() {
       }
 
       setUserId(user.uid);
+
+      const userDocRef = doc(db, "users", user.uid);
+      const userDocSnap = await getDoc(userDocRef);
+
+      if (userDocSnap.exists()) {
+        const userData = userDocSnap.data();
+        setProfileImageUrl(userData.profileImageUrl || null);
+      }
+
       await carregarProgresso(user.uid);
       setLoading(false);
     });
@@ -264,7 +273,14 @@ export default function Dashboard() {
     <SafeAreaView style={styles.container}>
       <Animatable.View animation="fadeInLeft" style={styles.topBar}>
         <TouchableOpacity onPress={() => router.push("/Profile")}>
-          <Ionicons name="person-circle" size={45} color="white" />
+          {profileImageUrl ? (
+            <Image
+              source={{ uri: profileImageUrl }}
+              style={{ width: 45, height: 45, borderRadius: 22.5 }}
+            />
+          ) : (
+            <Ionicons name="person-circle" size={45} color="#7B339C" />
+          )}
         </TouchableOpacity>
       </Animatable.View>
       <ScrollView

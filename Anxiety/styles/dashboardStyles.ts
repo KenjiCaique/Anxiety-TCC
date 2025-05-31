@@ -154,6 +154,7 @@ export const styles = StyleSheet.create({
     marginTop: 10,
     width: "100%",
     alignItems: "center",
+    color: 'white',
   },
 
   modalButtonDisabled: {
