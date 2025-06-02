@@ -1,5 +1,7 @@
-import { useRouter } from "expo-router";
+// React e hooks usados no componente
 import React, { useEffect, useRef, useState } from "react";
+
+// Componentes e APIs nativas do React Native
 import {
   Animated,
   Dimensions,
@@ -11,46 +13,50 @@ import {
   View,
 } from "react-native";
 
+// Ícones do pacote Expo Vector Icons para interface
 import { Ionicons } from "@expo/vector-icons";
 
-export default function App() {
-  const router = useRouter();
+// Navegação usando o roteador do Expo Router
+import { useRouter } from "expo-router";
 
+export default function BreathingGuide() {
+  const router = useRouter();
   const { width } = Dimensions.get("window");
   const circleWidth = width * 0.7;
 
-  const move = useRef(new Animated.Value(0)).current;
+  const moveAnim = useRef(new Animated.Value(0)).current;
   const textOpacity = useRef(new Animated.Value(1)).current;
-  const pulse = useRef(new Animated.Value(1)).current;
+  const pulseAnim = useRef(new Animated.Value(1)).current;
 
-  const animation = useRef<Animated.CompositeAnimation | null>(null);
+  const animationRef = useRef<Animated.CompositeAnimation | null>(null);
+  const pulseAnimationRef = useRef<Animated.CompositeAnimation | null>(null);
 
   const [isRunning, setIsRunning] = useState(false);
   const [countdown, setCountdown] = useState(4);
   const [phase, setPhase] = useState<"Inspirar" | "Expirar">("Inspirar");
-
   const [modalVisible, setModalVisible] = useState(false);
 
   const scaleAnim = useRef(new Animated.Value(1)).current;
+
   const handleBackPress = () => {
-  Animated.sequence([
-    Animated.timing(scaleAnim, {
-      toValue: 0.8,
-      duration: 100,
-      useNativeDriver: true,
-    }),
-    Animated.timing(scaleAnim, {
-      toValue: 1,
-      duration: 100,
-      useNativeDriver: true,
-    }),
-  ]).start(() => {
-    router.back();
-  });
-};
+    Animated.sequence([
+      Animated.timing(scaleAnim, {
+        toValue: 0.8,
+        duration: 100,
+        useNativeDriver: true,
+      }),
+      Animated.timing(scaleAnim, {
+        toValue: 1,
+        duration: 100,
+        useNativeDriver: true,
+      }),
+    ]).start(() => {
+      router.back();
+    });
+  };
 
   const startAnimation = () => {
-    animation.current = Animated.loop(
+    animationRef.current = Animated.loop(
       Animated.sequence([
         Animated.parallel([
           Animated.timing(textOpacity, {
@@ -58,7 +64,7 @@ export default function App() {
             duration: 4000,
             useNativeDriver: true,
           }),
-          Animated.timing(move, {
+          Animated.timing(moveAnim, {
             toValue: 1,
             duration: 4000,
             useNativeDriver: true,
@@ -70,7 +76,7 @@ export default function App() {
             duration: 4000,
             useNativeDriver: true,
           }),
-          Animated.timing(move, {
+          Animated.timing(moveAnim, {
             toValue: 0,
             duration: 4000,
             useNativeDriver: true,
@@ -78,26 +84,28 @@ export default function App() {
         ]),
       ])
     );
-    animation.current.start();
+    animationRef.current.start();
 
-    Animated.loop(
+    pulseAnimationRef.current = Animated.loop(
       Animated.sequence([
-        Animated.timing(pulse, {
+        Animated.timing(pulseAnim, {
           toValue: 1.1,
           duration: 2000,
           useNativeDriver: true,
         }),
-        Animated.timing(pulse, {
+        Animated.timing(pulseAnim, {
           toValue: 1,
           duration: 2000,
           useNativeDriver: true,
         }),
       ])
-    ).start();
+    );
+    pulseAnimationRef.current.start();
   };
 
   const stopAnimation = () => {
-    animation.current?.stop();
+    animationRef.current?.stop();
+    pulseAnimationRef.current?.stop();
   };
 
   const toggleAnimation = () => {
@@ -137,7 +145,7 @@ export default function App() {
     outputRange: [1, 0],
   });
 
-  const translate = move.interpolate({
+  const translate = moveAnim.interpolate({
     inputRange: [0, 1],
     outputRange: [0, circleWidth / 6],
   });
@@ -155,27 +163,30 @@ export default function App() {
 
       <Pressable
         onPress={handleBackPress}
-        style={{
-          position: "absolute",
-          top: 40,
-          left: 20,
-          padding: 10,
-          backgroundColor: "transparent", 
-          borderRadius: 5,
-          zIndex: 10,
-        }}
+        style={styles.backButton}
+        hitSlop={10}
       >
-         <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
-        <Ionicons name="arrow-back" size={24} color="#333" />
+        <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
+          <Ionicons name="arrow-back" size={24} color="#333" />
         </Animated.View>
       </Pressable>
-      <Pressable onPress={() => setModalVisible(true)} style={styles.infoButton}>
+
+      <Pressable
+        onPress={() => setModalVisible(true)}
+        style={styles.infoButton}
+        hitSlop={10}
+      >
         <Text style={styles.infoButtonText}>?</Text>
       </Pressable>
 
-      <View style={[styles.circleWrapper, { width: circleWidth, height: circleWidth }]}>
-        {[0, 1, 2, 3, 4, 5, 6, 7].map((item) => {
-          const rotation = move.interpolate({
+      <View
+        style={[
+          styles.circleWrapper,
+          { width: circleWidth, height: circleWidth },
+        ]}
+      >
+        {[...Array(8).keys()].map((item) => {
+          const rotation = moveAnim.interpolate({
             inputRange: [0, 1],
             outputRange: [`${item * 45}deg`, `${item * 45 + 180}deg`],
           });
@@ -183,20 +194,22 @@ export default function App() {
           return (
             <Animated.View
               key={item}
-              style={{
-                position: "absolute",
-                opacity: 0.15,
-                backgroundColor: moodColor,
-                width: circleWidth,
-                height: circleWidth,
-                borderRadius: circleWidth / 2,
-                transform: [
-                  { scale: pulse },
-                  { rotateZ: rotation },
-                  { translateX: translate },
-                  { translateY: translate },
-                ],
-              }}
+              style={[
+                styles.circleSegment,
+                {
+                  backgroundColor: moodColor,
+                  width: circleWidth,
+                  height: circleWidth,
+                  borderRadius: circleWidth / 2,
+                  opacity: 0.15,
+                  transform: [
+                    { scale: pulseAnim },
+                    { rotateZ: rotation },
+                    { translateX: translate },
+                    { translateY: translate },
+                  ],
+                },
+              ]}
             />
           );
         })}
@@ -220,13 +233,15 @@ export default function App() {
 
       <Text style={styles.motivationalText}>Mantenha o foco e relaxe</Text>
 
-      <Pressable onPress={toggleAnimation} style={styles.button}>
-        <Text style={styles.buttonText}>{isRunning ? "Pausar" : "Iniciar"}</Text>
+      <Pressable onPress={toggleAnimation} style={styles.button} hitSlop={10}>
+        <Text style={styles.buttonText}>
+          {isRunning ? "Pausar Respiração" : "Iniciar Respiração"}
+        </Text>
       </Pressable>
 
       <Modal
         animationType="slide"
-        transparent={true}
+        transparent
         visible={modalVisible}
         onRequestClose={() => setModalVisible(false)}
       >
@@ -235,12 +250,14 @@ export default function App() {
             <Text style={styles.modalTitle}>Sobre esta tela</Text>
             <Text style={styles.modalText}>
               Esta tela ajuda você a controlar a respiração, reduzindo a ansiedade
-              e promovendo relaxamento. Siga as instruções para inspirar e expirar.
+              e promovendo relaxamento. Siga as instruções para inspirar e
+              expirar.
             </Text>
 
             <Pressable
               style={styles.closeButton}
               onPress={() => setModalVisible(false)}
+              hitSlop={10}
             >
               <Text style={styles.closeButtonText}>Fechar</Text>
             </Pressable>
@@ -258,10 +275,22 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingBottom: 50,
   },
+  backButton: {
+    position: "absolute",
+    top: 40,
+    left: 20,
+    padding: 10,
+    backgroundColor: "transparent",
+    borderRadius: 5,
+    zIndex: 10,
+  },
   circleWrapper: {
     justifyContent: "center",
     alignItems: "center",
     position: "relative",
+  },
+  circleSegment: {
+    position: "absolute",
   },
   textWrapper: {
     position: "absolute",
@@ -318,14 +347,12 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     fontSize: 24,
   },
-
   modalOverlay: {
     flex: 1,
     backgroundColor: "rgba(0,0,0,0.5)",
     justifyContent: "center",
     alignItems: "center",
   },
-
   modalView: {
     margin: 20,
     backgroundColor: "white",
@@ -333,46 +360,38 @@ const styles = StyleSheet.create({
     padding: 30,
     alignItems: "center",
     shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 4,
     elevation: 5,
     width: "80%",
   },
-
   modalTitle: {
     fontSize: 22,
     fontWeight: "bold",
     marginBottom: 15,
   },
-
   modalText: {
     fontSize: 16,
     textAlign: "center",
     marginBottom: 20,
   },
-
   closeButton: {
     backgroundColor: "#6200ee",
     borderRadius: 10,
     paddingVertical: 10,
     paddingHorizontal: 20,
   },
-
   closeButtonText: {
     color: "white",
     fontWeight: "bold",
     fontSize: 16,
   },
-
   title: {
-  fontSize: 28,
-  fontWeight: "bold",
-  color: "#1B4965", 
-  marginBottom: 20,
-  textAlign: "center",
-},
+    fontSize: 28,
+    fontWeight: "bold",
+    color: "#1B4965",
+    marginBottom: 20,
+    textAlign: "center",
+  },
 });
