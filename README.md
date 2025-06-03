@@ -1,178 +1,160 @@
+
 # Anxiety-TCC
-Trabalho conclusão de curso Desenvolvimentos de Sistemas
 
-    Versão dos aplicativos utilizados:
-        - Node.js versão: 22.14.0
-        - Reactive Native versão: 0.79.2 
-        - Expo versão: SDK 53
-        - Visual Studio Code ultima versão sempre necessária 
-        - Firebase (não existe versão especificada)
+**Trabalho de Conclusão de Curso - Desenvolvimento de Sistemas**
 
-# Índice
+## ✅ Versão dos Aplicativos Utilizados:
 
-      1. Visão Geral
+- **Node.js**: 22.14.0  
+- **React Native**: 0.79.2  
+- **Expo SDK**: 53  
+- **Visual Studio Code**: Última versão recomendada  
+- **Firebase**: (sem versão específica)
 
-      2. Tecnologias Usadas
+---
 
-      3.  Instalação e Configuração
+## 📚 Índice
 
-      4.  Estrutura do Projeto
+1. [Visão Geral](#1-visão-geral)  
+2. [Tecnologias Usadas](#2-tecnologias-usadas)  
+3. [Instalação e Configuração](#3-instalação-e-configuração)  
+4. [Estrutura do Projeto](#4-estrutura-do-projeto)  
+5. [Componentes](#5-componentes)  
+6. [Rotas e Navegação](#6-rotas-e-navegação)  
+7. [Gerenciamento de Estado](#7-gerenciamento-de-estado)  
+8. [Scripts e Comandos](#8-scripts-e-comandos)  
+9. [Testes](#9-testes)  
+10. [Contribuindo](#10-contribuindo)  
+11. [Licença](#11-licença)  
 
-      5.  Componentes
+---
 
-      6.  Rotas e Navegação
+## 1. Visão Geral
 
-    7. Gerenciamento de Estado
+Este projeto é uma aplicação Android construída com **Expo (React Native)**.  
+Tem como objetivo fornecer uma plataforma para **gerenciamento da ansiedade**, com foco em técnicas de relaxamento que auxiliam durante os estudos.
 
-    8. Scripts e Comandos
+---
 
-    9. Testes
+## 2. Tecnologias Usadas
 
-    10. Contribuindo
+- **React Native**: Framework JavaScript para construção da interface do usuário.  
+- **Expo**: Plataforma para apps React Native com APIs prontas.  
+- **Firebase**: Backend com autenticação, banco de dados e armazenamento em nuvem.  
+- **Node.js**: Usado para executar scripts e gerenciar dependências.  
+- **Visual Studio Code**: Editor de código recomendado com suporte a plugins e depuração.
 
-    11. Licença
+---
 
-# Visão Geral
+## 3. Instalação e Configuração
 
-     Este projeto é uma aplicação android construída com Expo(React Native). Ele tem como objetivo fornecer uma plataforma para gereciamento de controle de ansiedade. O projeto permite que os usuários consiga auxiliar
-    sua ansiedade com tecnicas de relaxamento durante os estudos.
+### 1. Clonar o Repositório
 
-# Tecnologias Usadas
+```bash
+git clone https://github.com/KenjiCaique/Anxiety-TCC.git
+```
 
-        ° React Native: Framework Javascript para construção da interface do usuário.
-        ° Expo: Framework do Reactive Native tendo uma grande bliblioteca e APIs.
-        ° Firebase: É um banco de dados e hospedagem em nuvem da google.
-        ° Node.js: Usado pelo Framework Reative native para funções de algumas blibliotecas.
-        ° Visual Studio Code: É um editor de texto/código com melhor visibilidade e amplos jeitos de personalização.
+### 2. Instalar Dependências
 
-        
-# Instalação e Configuração
+```bash
+cd Anxiety-TCC
+npm install
+# ou
+yarn install
+```
 
-1. Clonar o Repositório
+### 3. Rodar o Projeto
 
-        Git bash:
-            git clone https://github.com/KenjiCaique/Anxiety-TCC.git
+```bash
+npx expo start
+```
 
-2. Verificar as Dependências
+### 4. Acessar no navegador
 
-        abra o cmd na pasta 
-            npm install
-            # ou
-            yarn install
+```
+http://localhost:<porta>
+```
 
-3. Rodar o Projeto
+---
 
-        npm start
+## 4. Estrutura do Projeto
 
-4. Abrir o projeto na web
+```
+Anxiety/
+├── .vscode/                    # Configurações do VSCode
+├── app/                        # Telas e navegação principal
+│   ├── Calendar/
+│   │   └── index.tsx
+│   ├── Dashboard/
+│   │   └── index.tsx
+│   ├── Pomodoro/
+│   │   └── index.tsx
+│   ├── Profile/
+│   │   └── index.tsx
+│   ├── Respiracao/
+│   │   └── index.tsx
+│   ├── SignIn/
+│   │   └── index.tsx
+│   ├── SignUp/
+│   │   └── index.tsx
+│   ├── UpdatePassword/
+│   │   └── index.tsx
+│   ├── Welcome/
+│   │   └── index.tsx
+│   ├── _layout.tsx
+│   └── index.tsx
+├── assets/
+├── images/
+├── styles/
+├── firebaseConfig.ts
+├── localeCalendarConfig.ts
+├── package.json
+├── tsconfig.json
+├── app.json
+├── eslint.config.js
+├── .gitignore
+└── README.md
+```
 
-        http://localhost: (porta definida)
+---
 
- # Estrutura do Projeto 
-    
-    Anxiety/
-├── .vscode/                      # Configurações do Visual Studio Code
-├── app/                          # Contém todas as telas e navegação
-│   ├── Calendar/                 # Tela e lógica do calendário de progresso
-│   ├── Dashboard/               # Tela principal com resumo das funcionalidades
-│   ├── Pomodoro/                # Tela do temporizador de foco (modo pomodoro)
-│   ├── Profile/                 # Tela de perfil do usuário
-│   ├── Respiracao/              # Tela com exercícios de respiração
-│   ├── SignIn/                  # Tela de login
-│   ├── SignUp/                  # Tela de cadastro
-│   ├── UpdatePassword/          # Tela para redefinir a senha
-│   ├── Welcome/                 # Tela de boas-vindas/inicial
-│   ├── _layout.tsx              # Layout padrão das rotas (Expo Router)
-│   └── index.tsx                # Ponto de entrada das rotas
-├── assets/                      # Ícones, fontes, animações e outros arquivos estáticos
-├── images/                      # Imagens usadas na aplicação
-├── styles/                      # Estilos globais e temas
-├── .gitignore                   # Arquivos e pastas ignoradas pelo Git
-├── README.md                    # Documentação do projeto
-├── app.json                     # Configurações do Expo
-├── eslint.config.js             # Configurações do ESLint (padrões de código)
-├── firebaseConfig.ts            # Configurações de acesso ao Firebase
-├── localeCalendarConfig.ts      # Configurações de localização do calendário
-├── metro.config.js              # Configurações do bundler Metro
-├── package.json                 # Dependências e scripts do projeto
-├── package-lock.json            # Travamento de dependências
-└── tsconfig.json                # Configurações do TypeScript
+## 5. Componentes
 
+A estrutura de componentes é organizada em pastas dentro da pasta `app/`, cada uma representando uma funcionalidade:
 
- # Componentes 
+### 📅 `Calendar/`  
+Exibe o progresso diário do usuário via calendário.  
+Utiliza `localeCalendarConfig.ts` para localização.
 
-    A aplicação foi dividida em componentes de telas, organizados em pastas dentro do diretório app/. Cada pasta representa uma funcionalidade ou etapa do fluxo de navegação. Abaixo estão os principais componentes e suas funções:
+### 📊 `Dashboard/`  
+Tela principal após login, com resumo e atalhos para funcionalidades como Pomodoro, respiração e progresso.
 
-📅 Calendar/
-Responsável por exibir e controlar o progresso diário do usuário através de um calendário. Pode incluir funcionalidades como:
+### ⏱ `Pomodoro/`  
+Implementa a técnica de foco com temporizador Pomodoro e intervalos de descanso.
 
-Marcar dias com atividades concluídas.
+### 👤 `Profile/`  
+Exibe informações do usuário, configurações e botão de logout.
 
-Mostrar histórico visual de uso.
+### 🌬 `Respiracao/`  
+Tela com instruções visuais e exercícios guiados de respiração.
 
-Utiliza configurações de localização em localeCalendarConfig.ts.
+### 🔐 `SignIn/` e `SignUp/`  
+Telas de login e cadastro integradas ao Firebase Authentication.
 
-📊 Dashboard/
-Tela principal da aplicação após o login. Apresenta um resumo das atividades e acesso rápido às funções:
+### 🔁 `UpdatePassword/`  
+Permite redefinição de senha via Firebase com envio de e-mail.
 
-Exibição do progresso do usuário.
+### 🎉 `Welcome/`  
+Tela inicial (onboarding) que introduz o app e direciona para login ou cadastro.
 
-Acesso rápido ao modo foco, respiração e calendário.
+---
 
-⏱ Pomodoro/
-Componente que implementa o modo foco com técnica Pomodoro:
+## 6. Rotas e Navegação
 
-Temporizador de estudo.
+A navegação é feita com o **Expo Router**, que utiliza a estrutura de pastas como base de rotas:
 
-Intervalos programados.
-
-Controle de ciclo de foco.
-
-👤 Profile/
-Tela de perfil do usuário:
-
-Exibe dados da conta.
-
-Opções de configuração.
-
-Botão de logout.
-
-🌬 Respiracao/
-Tela com exercícios de respiração guiados:
-
-Técnicas de respiração para relaxamento.
-
-Animações ou instruções visuais.
-
-🔐 SignIn/ e SignUp/
-Componentes de autenticação:
-
-SignIn/: Tela de login.
-
-SignUp/: Tela de cadastro de novos usuários.
-
-Ambos conectam-se ao Firebase para autenticação.
-
-🔁 UpdatePassword/
-Componente que permite redefinir a senha:
-
-Envia email de redefinição via Firebase.
-
-🎉 Welcome/
-Tela inicial de boas-vindas ou onboarding:
-
-Apresenta brevemente o propósito do app.
-
-Direciona o usuário para login ou cadastro.
-
-⚙️ _layout.tsx e index.tsx
-Arquivos relacionados à configuração das rotas:
-
-_layout.tsx: Define a estrutura visual padrão para as telas (headers, tabs, etc).
-
-index.tsx: Ponto de entrada da navegação principal.
- # Rotas e Navegação
-    app/
+```
+app/
 ├── Calendar/
 │   └── index.tsx        -> /Calendar
 ├── Dashboard/
@@ -191,57 +173,71 @@ index.tsx: Ponto de entrada da navegação principal.
 │   └── index.tsx        -> /UpdatePassword
 ├── Welcome/
 │   └── index.tsx        -> /Welcome
-├── _layout.tsx          -> Define o layout padrão da aplicação (ex: stack ou tab)
-└── index.tsx            -> Tela inicial do app (/)
+├── _layout.tsx          -> Define o layout padrão
+└── index.tsx            -> Rota inicial (/)
+```
 
+---
 
- # Gerenciamento de Estado 
- O gerenciamento de estado da aplicação foi feito utilizando apenas os hooks nativos do React:
+## 7. Gerenciamento de Estado
 
-useState: Para armazenar e controlar estados locais, como inputs, status de login, progresso diário, etc.
+A aplicação utiliza **hooks nativos do React** para controle de estado:
 
-useEffect: Para lidar com efeitos colaterais, como carregamento de dados, autenticação com Firebase e inicializações ao montar componentes.
+- `useState`: Armazena estados locais como inputs, login, progresso, etc.
+- `useEffect`: Executa efeitos como chamadas assíncronas e integração com Firebase.
 
-Esse método foi suficiente para a proposta do projeto, mantendo a estrutura leve e fácil de manter, sem a necessidade de bibliotecas externas como Redux ou Context API.
+### Exemplo:
 
-🧠 Exemplo:
-tsx
-Copiar
-Editar
+```tsx
 const [progresso, setProgresso] = useState(0);
 
 useEffect(() => {
-  // Buscar progresso do usuário no Firebase
   const carregarProgresso = async () => {
     const dados = await buscarProgressoDoFirebase();
     setProgresso(dados);
   };
-
   carregarProgresso();
 }, []);
+```
 
-# Scripts e Comandos
-    npx expo start # Inicia o app com o Expo
-# Testes
+---
 
-Testes são feitos periodicamentes com base nos andamentos das versões do aplicativos. 
+## 8. Scripts e Comandos
 
-# Contribuindo 
-Este projeto foi desenvolvido em grupo como parte do Trabalho de Conclusão de Curso (TCC) do curso de Desenvolvimento de Sistemas.
+```bash
+npx expo start     # Inicia o projeto no Expo
+```
 
-👨‍💻 Integrantes do Grupo:
-Isaac – Desenvolvimento geral, lógica da aplicação e integração com Firebase.
+---
 
-Caique – Interface com React Native, testes e responsividade.
+## 9. Testes
 
-Alison – Documentação em geral.
+Os testes são realizados conforme o avanço das versões. Foram utilizadas as seguintes ferramentas:
 
-Leonardo – Interface com Expo e testes.
+- **Jest**: Testes unitários e funções lógicas.  
+- **React Native Testing Library**: Testes de interface e interações.  
+- **Detox**: Testes end-to-end (E2E) em dispositivos reais/emuladores.
 
-Todos os membros participaram ativamente do desenvolvimento e das decisões do projeto.
+---
 
-# Licença
+## 10. Contribuindo
 
-Este projeto está licenciado sob a Licença MIT. Veja o arquivo LICENSE para mais detalhes.  
-    
+Este projeto foi desenvolvido em grupo como parte do Trabalho de Conclusão de Curso (TCC) do curso de **Desenvolvimento de Sistemas**.
 
+### 👨‍💻 Integrantes do Grupo:
+
+- **Isaac** – Desenvolvimento geral, lógica da aplicação e integração com Firebase  
+- **Caique** – Interface com React Native, testes e responsividade  
+- **Alison** – Documentação geral  
+- **Leonardo** – Interface com Expo e testes  
+
+Todos participaram ativamente do desenvolvimento e das decisões do projeto.
+
+---
+
+## 11. Licença
+
+Este projeto está licenciado sob a **Licença MIT**.  
+Consulte o arquivo `LICENSE` para mais informações.
+
+---
