@@ -15,16 +15,18 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  View
+  View,
+  ImageBackground,           // ← Import necessário
 } from "react-native";
 import * as Animatable from "react-native-animatable";
 import { styles } from '../../styles/dashboardStyles';
 
-
 import { getAuth, onAuthStateChanged } from "firebase/auth";
-import { doc, getDoc, setDoc } from "firebase/firestore"; // <- lembre de importar updateDoc
+import { doc, getDoc, setDoc } from "firebase/firestore";
 import { db } from "../../firebaseConfig";
 
+// Import da imagem de fundo (supondo que você colocou em src/images)
+import backgroundImage from '../../images/logo.png'; 
 
 async function salvarProgressoNoUsuario(userId: string, trilhaId: string, progressoData: any) {
   const progressoRef = doc(db, "users", userId, "progressoTrilhas", trilhaId);
@@ -36,6 +38,7 @@ async function salvarProgressoNoUsuario(userId: string, trilhaId: string, progre
     console.error("Erro ao salvar progresso no usuário:", error);
   }
 }
+
 const screenWidth = Dimensions.get("window").width;
 
 type DayStatus = "locked" | "unlocked" | "completed";
@@ -82,6 +85,7 @@ export default function Dashboard() {
     modoFocoCount: number;
     lastAccessDate: string; // ISO date string "yyyy-mm-dd"
   }
+
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (!user) {
@@ -100,7 +104,7 @@ export default function Dashboard() {
             const userData = userDocSnap.data();
             const imageName = userData.profileImage || 'profile1.png';
             const localImage = imageOptions[imageName];
-            setProfileImage(localImage); // ✅ CORRETO!
+            setProfileImage(localImage);
           }
         }
       };
@@ -166,8 +170,6 @@ export default function Dashboard() {
             }, { merge: true });
           }
         }
-
-
       } else {
         // Se não existe trilha ainda, cria com dados iniciais
         const dadosIniciais = {
@@ -185,13 +187,10 @@ export default function Dashboard() {
 
         await setDoc(trilhaRef, dadosIniciais);
       }
-
     } catch (error) {
       console.error("Erro ao carregar progresso da trilha:", error);
     }
   }
-
-
 
   async function salvarProgressoNoFirebase(
     updatedDays: Day[],
@@ -215,14 +214,10 @@ export default function Dashboard() {
 
     try {
       await salvarProgressoNoUsuario(userId, "trilhaPrincipal", progressoData);
-
-
-
     } catch (error) {
       console.error("Erro ao salvar progresso na trilha:", error);
     }
   }
-
 
   if (loading) {
     return (
@@ -301,192 +296,251 @@ export default function Dashboard() {
     return { x, y };
   };
 
-
   const safeDays = days ?? [];
-
   const currentDayIndex = safeDays.findIndex((d) => d.status === "unlocked");
   const totalHeight = safeDays.length * verticalSpacing + 80;
 
-
   return (
     <SafeAreaView style={styles.container}>
-      <Animatable.View animation="fadeInLeft" style={styles.topBar}>
-        <TouchableOpacity onPress={() => router.push("/Profile")}>
-          {profileImage ? (
-            <Image
-              source={profileImage}
-              style={{ width: 45, height: 45, borderRadius: 22.5 }}
-            />
-          ) : (
-            <Ionicons name="person-circle" size={45} color="#7B339C" />
-          )}
-        </TouchableOpacity>
-
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
-          <TouchableOpacity onPress={() => setShowIntroModal(true)}>
-            <Ionicons name="information-circle-outline" size={28} color="#7B339C" />
+        {/* ---------- BARRA SUPERIOR ---------- */}
+        <Animatable.View animation="fadeInLeft" style={styles.topBar}>
+          <TouchableOpacity onPress={() => router.push("/Profile")}>
+            {profileImage ? (
+              <Image
+                source={profileImage}
+                style={{ width: 45, height: 45, borderRadius: 22.5 }}
+              />
+            ) : (
+              <Ionicons name="person-circle" size={45} color="#7B339C" />
+            )}
           </TouchableOpacity>
-        </View>
-        
-      </Animatable.View>
-      <ScrollView
-        style={{ flex: 1 }}
-        contentContainerStyle={{
-          minHeight: (days?.length ?? 0) * 90 + 130,
-          paddingBottom: 60,
-        }}
-        showsVerticalScrollIndicator={true}
-      >
-        <View style={{ flex: 1, position: "relative", minHeight: (days ?? []).length * 90 + 80 }}>
-          {(days ?? []).map((day, i) => {
-            const x = screenWidth / 2 + 90 * Math.sin((i * Math.PI) / 6) - 30;
-            const y = 80 * i + 35 + (i === 0 ? 15 : 0);
-            const currentDayIndex = days.findIndex((d) => d.status === "unlocked");
-            const isCurrent = i === currentDayIndex;
-            const isClickable = day.status !== "locked";
 
-            return (
-              <Animatable.View
-                animation="fadeInUp"
-                delay={i * 50}
-                key={day.number}
-                style={{ position: "absolute", left: x, top: y, alignItems: "center" }}
-              >
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+            <TouchableOpacity onPress={() => setShowIntroModal(true)}>
+              <Ionicons name="information-circle-outline" size={28} color="#7B339C" />
+            </TouchableOpacity>
+          </View>
+        </Animatable.View>
+         {/* ---------- IMAGEM DE FUNDO ---------- */}
+         <ImageBackground
+        source={backgroundImage}
+        style={styles.backgroundImage}
+        imageStyle={{ opacity: 0.35 }}
+      > 
+
+        {/* ---------- CAMINHO DE DIAS ---------- */}
+        <ScrollView
+          style={{ flex: 1 }}
+          contentContainerStyle={{
+            minHeight: (days?.length ?? 0) * 90 + 130,
+            paddingBottom: 60,
+          }}
+          showsVerticalScrollIndicator={true}
+        >
+          <View style={{ flex: 1, position: "relative", minHeight: (days ?? []).length * 90 + 80 }}>
+            {(days ?? []).map((day, i) => {
+              const x = screenWidth / 2 + 90 * Math.sin((i * Math.PI) / 6) - 30;
+              const y = 80 * i + 35 + (i === 0 ? 15 : 0);
+              const currentDayIndex = days.findIndex((d) => d.status === "unlocked");
+              const isCurrent = i === currentDayIndex;
+              const isClickable = day.status !== "locked";
+
+              return (
+                <Animatable.View
+                  animation="fadeInUp"
+                  delay={i * 50}
+                  key={day.number}
+                  style={{ position: "absolute", left: x, top: y, alignItems: "center" }}
+                >
+                  <TouchableOpacity
+                    onPress={() => {
+                      if (isClickable) openProgressModal(i);
+                    }}
+                    disabled={!isClickable}
+                    style={[
+                      styles.dayCircle,
+                      day.status === "completed" && styles.dayCompleted,
+                      day.status === "locked" && styles.dayLocked,
+                    ]}
+                  >
+                    {day.status === "completed" ? (
+                      <FontAwesome5 name="check" size={24} color="white" />
+                    ) : (
+                      <Text
+                        style={[
+                          styles.dayNumber,
+                          day.status === "locked" && styles.dayNumberLocked,
+                        ]}
+                      >
+                        {day.number}
+                      </Text>
+                    )}
+
+                    {day.status !== "locked" && (
+                      <View style={styles.progressContainer}>
+                        <View
+                          style={[
+                            styles.progressBarRespiracao,
+                            {
+                              width:
+                                respiracaoCount === 0
+                                  ? 0
+                                  : (day.progressoRespiracao / respiracaoCount) * 60,
+                            },
+                          ]}
+                        />
+                        <View
+                          style={[
+                            styles.progressBarModoFoco,
+                            {
+                              width:
+                                modoFocoCount === 0
+                                  ? 0
+                                  : (day.progressoModoFoco / modoFocoCount) * 60,
+                            },
+                          ]}
+                        />
+                      </View>
+                    )}
+                  </TouchableOpacity>
+                </Animatable.View>
+              );
+            })}
+          </View>
+        </ScrollView>
+        </ImageBackground>
+
+        {/* ---------- BOTÕES INFERIORES ---------- */}
+        <Animatable.View animation="fadeInUp" style={styles.botoes}>
+          <TouchableOpacity onPress={openConfigModal}>
+            <FontAwesome5 name="map" size={25} color="#7B339C" />
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => router.push("/Calendar")}>
+            <FontAwesome5 name="calendar-alt" size={25} color="#7B339C" />
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => router.push("/Pomodor")}>
+            <MaterialCommunityIcons
+              name="school-outline"
+              size={25}
+              color="#7B339C"
+            />
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => router.push("/Respiracao")}>
+            <MaterialCommunityIcons name="clock" size={25} color="#7B339C" />
+          </TouchableOpacity>
+        </Animatable.View>
+
+        {/* ---------- MODAL DE PROGRESSO DO DIA ---------- */}
+        {selectedDayIndex !== null && (
+          <Modal visible={modalVisible} transparent animationType="fade">
+            <KeyboardAvoidingView
+              behavior={Platform.OS === "ios" ? "padding" : undefined}
+              style={styles.modalOverlay}
+            >
+              <View style={styles.modalContent}>
+                <Text style={styles.modalTitle}>Escolha uma ação</Text>
+
                 <TouchableOpacity
+                  disabled={
+                    days[selectedDayIndex].progressoRespiracao >= respiracaoCount
+                  }
                   onPress={() => {
-                    if (isClickable) openProgressModal(i);
+                    if (
+                      days[selectedDayIndex].progressoRespiracao < respiracaoCount
+                    ) {
+                      router.push("/Respiracao");
+
+                      const newDays = [...days];
+                      newDays[selectedDayIndex].progressoRespiracao += 1;
+                      setDays(newDays);
+                      salvarProgressoNoFirebase(newDays);
+                    }
+                    setModalVisible(false);
                   }}
-                  disabled={!isClickable}
                   style={[
-                    styles.dayCircle,
-                    day.status === "completed" && styles.dayCompleted,
-                    day.status === "locked" && styles.dayLocked,
+                    styles.modalButton,
+                    days[selectedDayIndex].progressoRespiracao >= respiracaoCount &&
+                    styles.modalButtonDisabled,
                   ]}
                 >
-                  {day.status === "completed" ? (
-                    <FontAwesome5 name="check" size={24} color="white" />
-                  ) : (
-                    <Text
-                      style={[
-                        styles.dayNumber,
-                        day.status === "locked" && styles.dayNumberLocked,
-                      ]}
-                    >
-                      {day.number}
-                    </Text>
-                  )}
-
-                  {day.status !== "locked" && (
-                    <View style={styles.progressContainer}>
-                      <View
-                        style={[
-                          styles.progressBarRespiracao,
-                          {
-                            width:
-                              respiracaoCount === 0
-                                ? 0
-                                : (day.progressoRespiracao / respiracaoCount) * 60,
-                          },
-                        ]}
-                      />
-                      <View
-                        style={[
-                          styles.progressBarModoFoco,
-                          {
-                            width:
-                              modoFocoCount === 0
-                                ? 0
-                                : (day.progressoModoFoco / modoFocoCount) * 60,
-                          },
-                        ]}
-                      />
-                    </View>
-                  )}
+                  <Text style={styles.modalButtonText}>Respiração</Text>
                 </TouchableOpacity>
-              </Animatable.View>
-            );
-          })}
-        </View>
-      </ScrollView>
 
-      <Animatable.View animation="fadeInUp" style={styles.botoes}>
-        <TouchableOpacity onPress={openConfigModal}>
-          <FontAwesome5 name="map" size={25} color="#7B339C" />
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => router.push("/Calendar")}>
-          <FontAwesome5 name="calendar-alt" size={25} color="#7B339C" />
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => router.push("/Pomodor")}>
-          <MaterialCommunityIcons
-            name="school-outline"
-            size={25}
-            color="#7B339C"
-          />
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => router.push("/Respiracao")}>
-          <MaterialCommunityIcons name="clock" size={25} color="#7B339C" />
-        </TouchableOpacity>
-      </Animatable.View>
+                <TouchableOpacity
+                  disabled={days[selectedDayIndex].progressoModoFoco >= modoFocoCount}
+                  onPress={() => {
+                    if (days[selectedDayIndex].progressoModoFoco < modoFocoCount) {
+                      router.push("/Pomodor");
 
-      {selectedDayIndex !== null && (
-        <Modal visible={modalVisible} transparent animationType="fade">
+                      const newDays = [...days];
+                      newDays[selectedDayIndex].progressoModoFoco += 1;
+                      setDays(newDays);
+                      salvarProgressoNoFirebase(newDays);
+                    }
+                    setModalVisible(false);
+                  }}
+                  style={[
+                    styles.modalButton,
+                    days[selectedDayIndex].progressoModoFoco >= modoFocoCount &&
+                    styles.modalButtonDisabled,
+                  ]}
+                >
+                  <Text style={styles.modalButtonText}>Pomodoro</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  onPress={() => setModalVisible(false)}
+                  style={styles.modalCancelButton}
+                >
+                  <Text>Cancelar</Text>
+                </TouchableOpacity>
+              </View>
+            </KeyboardAvoidingView>
+          </Modal>
+        )}
+
+        {/* ---------- MODAL DE CONFIGURAÇÃO ---------- */}
+        <Modal visible={configModalVisible} transparent animationType="fade">
           <KeyboardAvoidingView
             behavior={Platform.OS === "ios" ? "padding" : undefined}
             style={styles.modalOverlay}
           >
             <View style={styles.modalContent}>
-              <Text style={styles.modalTitle}>Escolha uma ação</Text>
+              <Text style={styles.modalTitle}>Configurar Quantidades</Text>
 
-              <TouchableOpacity
-                disabled={
-                  days[selectedDayIndex].progressoRespiracao >= respiracaoCount
-                }
-                onPress={() => {
-                  if (
-                    days[selectedDayIndex].progressoRespiracao < respiracaoCount
-                  ) {
-                    router.push("/Respiracao");
+              <TextInput
+                keyboardType="number-pad"
+                placeholder="Quantidade de dias"
+                value={inputDays}
+                onChangeText={setInputDays}
+                style={styles.modalInput}
+                placeholderTextColor="#BFA8E8"
+              />
 
-                    const newDays = [...days];
-                    newDays[selectedDayIndex].progressoRespiracao += 1;
-                    setDays(newDays);
-                    salvarProgressoNoFirebase(newDays);
-                  }
-                  setModalVisible(false);
-                }}
-                style={[
-                  styles.modalButton,
-                  days[selectedDayIndex].progressoRespiracao >= respiracaoCount &&
-                  styles.modalButtonDisabled,
-                ]}
-              >
-                <Text style={styles.modalButtonText}>Respiração</Text>
+              <TextInput
+                keyboardType="number-pad"
+                placeholder="Qtd. vezes Respiração (0-20)"
+                value={inputRespiracao}
+                onChangeText={setInputRespiracao}
+                style={styles.modalInput}
+                placeholderTextColor="#BFA8E8"
+              />
+
+              <TextInput
+                keyboardType="number-pad"
+                placeholder="Qtd. vezes Podoro (0-20)"
+                value={inputModoFoco}
+                onChangeText={setInputModoFoco}
+                style={styles.modalInput}
+                placeholderTextColor="#BFA8E8"
+              />
+
+              <TouchableOpacity onPress={confirmConfig} style={styles.modalButton}>
+                <Text style={styles.modalButtonText}>Confirmar</Text>
               </TouchableOpacity>
 
               <TouchableOpacity
-                disabled={days[selectedDayIndex].progressoModoFoco >= modoFocoCount}
-                onPress={() => {
-                  if (days[selectedDayIndex].progressoModoFoco < modoFocoCount) {
-                    router.push("/Pomodor");
-
-                    const newDays = [...days];
-                    newDays[selectedDayIndex].progressoModoFoco += 1;
-                    setDays(newDays);
-                    salvarProgressoNoFirebase(newDays);
-                  }
-                  setModalVisible(false);
-                }}
-                style={[
-                  styles.modalButton,
-                  days[selectedDayIndex].progressoModoFoco >= modoFocoCount &&
-                  styles.modalButtonDisabled,
-                ]}
-              >
-                <Text style={styles.modalButtonText}>Pomodoro</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                onPress={() => setModalVisible(false)}
+                onPress={() => setConfigModalVisible(false)}
                 style={styles.modalCancelButton}
               >
                 <Text>Cancelar</Text>
@@ -494,76 +548,28 @@ export default function Dashboard() {
             </View>
           </KeyboardAvoidingView>
         </Modal>
-      )}
 
-      <Modal visible={configModalVisible} transparent animationType="fade">
-        <KeyboardAvoidingView
-          behavior={Platform.OS === "ios" ? "padding" : undefined}
-          style={styles.modalOverlay}
-        >
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Configurar Quantidades</Text>
+        {/* ---------- MODAL DE INTRO (APARECE NA PRIMEIRA VEZ) ---------- */}
+        <Modal visible={showIntroModal} transparent animationType="fade">
+          <KeyboardAvoidingView
+            behavior={Platform.OS === "ios" ? "padding" : undefined}
+            style={styles.modalOverlay}
+          >
+            <View style={styles.modalContent}>
+              <Text style={styles.modalTitle}>Bem-vindo(a) à sua trilha!</Text>
+              <Text style={{ textAlign: 'center', marginVertical: 10 }}>
+                Aqui você vai acompanhar seu progresso diário. Cada dia representa um pequeno desafio com sessões de respiração e foco. Aperte no icone do mapa para definir sua meta.
+              </Text>
 
-            <TextInput
-              keyboardType="number-pad"
-              placeholder="Quantidade de dias"
-              value={inputDays}
-              onChangeText={setInputDays}
-              style={styles.modalInput}
-              placeholderTextColor="#BFA8E8"
-            />
-
-            <TextInput
-              keyboardType="number-pad"
-              placeholder="Qtd. vezes Respiração (0-20)"
-              value={inputRespiracao}
-              onChangeText={setInputRespiracao}
-              style={styles.modalInput}
-              placeholderTextColor="#BFA8E8"
-            />
-
-            <TextInput
-              keyboardType="number-pad"
-              placeholder="Qtd. vezes Podoro (0-20)"
-              value={inputModoFoco}
-              onChangeText={setInputModoFoco}
-              style={styles.modalInput}
-              placeholderTextColor="#BFA8E8"
-            />
-            <TouchableOpacity onPress={confirmConfig} style={styles.modalButton}>
-              <Text style={styles.modalButtonText}>Confirmar</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              onPress={() => setConfigModalVisible(false)}
-              style={styles.modalCancelButton}
-            >
-              <Text>Cancelar</Text>
-            </TouchableOpacity>
-          </View>
-        </KeyboardAvoidingView>
-      </Modal>
-
-      <Modal visible={showIntroModal} transparent animationType="fade">
-        <KeyboardAvoidingView
-          behavior={Platform.OS === "ios" ? "padding" : undefined}
-          style={styles.modalOverlay}
-        >
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Bem-vindo(a) à sua trilha!</Text>
-            <Text style={{ textAlign: 'center', marginVertical: 10 }}>
-              Aqui você vai acompanhar seu progresso diário. Cada dia representa um pequeno desafio com sessões de respiração e foco. Aperte no icone do mapa para definir sua meta.
-            </Text>
-
-            <TouchableOpacity
-              onPress={() => setShowIntroModal(false)}
-              style={styles.modalButton}
-            >
-              <Text style={styles.modalButtonText}>Começar</Text>
-            </TouchableOpacity>
-          </View>
-        </KeyboardAvoidingView>
-      </Modal>
+              <TouchableOpacity
+                onPress={() => setShowIntroModal(false)}
+                style={styles.modalButton}
+              >
+                <Text style={styles.modalButtonText}>Começar</Text>
+              </TouchableOpacity>
+            </View>
+          </KeyboardAvoidingView>
+        </Modal>
     </SafeAreaView>
   );
 }
