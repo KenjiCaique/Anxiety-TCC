@@ -212,12 +212,7 @@ npx expo start     # Inicia o projeto no Expo
 
 ## 9. Testes
 
-Os testes são realizados conforme o avanço das versões. Foram utilizadas as seguintes ferramentas:
-
-- **Jest**: Testes unitários e funções lógicas.  
-- **React Native Testing Library**: Testes de interface e interações.  
-- **Detox**: Testes end-to-end (E2E) em dispositivos reais/emuladores.
-
+Os testes são realizados conforme o avanço das versões.
 ---
 
 ## 10. Contribuindo
@@ -226,10 +221,10 @@ Este projeto foi desenvolvido em grupo como parte do Trabalho de Conclusão de C
 
 ### 👨‍💻 Integrantes do Grupo:
 
-- **Isaac** – Desenvolvimento geral, lógica da aplicação e integração com Firebase  
-- **Caique** – Interface com React Native, testes e responsividade  
-- **Alison** – Documentação geral  
-- **Leonardo** – Interface com Expo e testes  
+- **Isaac Yan de Melo M. A.** – Interface com React Native/Expo, lógica da aplicação e integração com Firebase  
+- **Caique Kenji Y.** – Interface com React Native/Expo, testes e responsividade  
+- **Alison das Neves S.** – Documentação geral  
+- **Leonardo Messias I.** – Interface com React Native/Expo e testes  
 
 Todos participaram ativamente do desenvolvimento e das decisões do projeto.
 
