@@ -81,7 +81,4 @@ export const styles = StyleSheet.create({
     marginTop: 14,
     alignSelf: "center",
   },
-  registerText: {
-    color: "#a1a1a1",
-  },
 });

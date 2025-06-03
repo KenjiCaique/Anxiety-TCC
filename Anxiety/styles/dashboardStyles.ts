@@ -12,6 +12,7 @@ export const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     paddingHorizontal: 15,
+    justifyContent: 'space-between'
   },
 
   // ---------------------- DIAS ----------------------

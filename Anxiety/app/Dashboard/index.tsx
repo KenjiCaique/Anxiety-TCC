@@ -6,6 +6,7 @@ import {
   Alert,
   Dimensions,
   Image,
+  ImageSourcePropType,
   KeyboardAvoidingView,
   Modal,
   Platform,
@@ -21,7 +22,7 @@ import { styles } from '../../styles/dashboardStyles';
 
 
 import { getAuth, onAuthStateChanged } from "firebase/auth";
-import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore"; // <- lembre de importar updateDoc
+import { doc, getDoc, setDoc } from "firebase/firestore"; // <- lembre de importar updateDoc
 import { db } from "../../firebaseConfig";
 
 
@@ -57,6 +58,7 @@ export default function Dashboard() {
   const [respiracaoCount, setRespiracaoCount] = useState(0);
   const [modoFocoCount, setModoFocoCount] = useState(0);
 
+  const [showIntroModal, setShowIntroModal] = useState(false);
   const [days, setDays] = useState<Day[]>([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [configModalVisible, setConfigModalVisible] = useState(false);
@@ -64,15 +66,22 @@ export default function Dashboard() {
   const [inputRespiracao, setInputRespiracao] = useState("");
   const [inputModoFoco, setInputModoFoco] = useState("");
   const [selectedDayIndex, setSelectedDayIndex] = useState<number | null>(null);
-  const [profileImageUrl, setProfileImageUrl] = useState<string | null>(null);
+  const [profileImage, setProfileImage] = useState<ImageSourcePropType | null>(null);
+
+  const imageOptions: { [key: string]: ImageSourcePropType } = {
+    'profile1.png': require('../../images/axolote1.jpg'),
+    'profile2.png': require('../../images/axolote2.jpg'),
+    'profile3.png': require('../../images/axolote3.jpg'),
+    'profile4.png': require('../../images/axolote4.jpg'),
+  };
 
   interface ProgressoData {
-  days: Day[];
-  totalDays: number;
-  respiracaoCount: number;
-  modoFocoCount: number;
-  lastAccessDate: string; // ISO date string "yyyy-mm-dd"
-}
+    days: Day[];
+    totalDays: number;
+    respiracaoCount: number;
+    modoFocoCount: number;
+    lastAccessDate: string; // ISO date string "yyyy-mm-dd"
+  }
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (!user) {
@@ -82,12 +91,35 @@ export default function Dashboard() {
 
       setUserId(user.uid);
 
-      const userDocRef = doc(db, "users", user.uid);
+      const fetchProfileImage = async () => {
+        const user = auth.currentUser;
+        if (user) {
+          const userDocRef = doc(db, 'users', user.uid);
+          const userDocSnap = await getDoc(userDocRef);
+          if (userDocSnap.exists()) {
+            const userData = userDocSnap.data();
+            const imageName = userData.profileImage || 'profile1.png';
+            const localImage = imageOptions[imageName];
+            setProfileImage(localImage); // ✅ CORRETO!
+          }
+        }
+      };
+
+      fetchProfileImage();
+
+      const userDocRef = doc(db, 'users', user.uid);
       const userDocSnap = await getDoc(userDocRef);
 
       if (userDocSnap.exists()) {
         const userData = userDocSnap.data();
-        setProfileImageUrl(userData.profileImageUrl || null);
+        const imageName = userData.profileImage || 'profile1.png';
+        const localImage = imageOptions[imageName];
+        setProfileImage(localImage);
+
+        if (!userData.firstVisitDashboard) {
+          setShowIntroModal(true);
+          await setDoc(userDocRef, { firstVisitDashboard: true }, { merge: true });
+        }
       }
 
       await carregarProgresso(user.uid);
@@ -122,13 +154,13 @@ export default function Dashboard() {
             updatedDays[nextLockedIndex].status = "unlocked";
             setDays(updatedDays);
             console.log("Desbloqueando dia", updatedDays[nextLockedIndex].number);
-            await updateDoc(trilhaRef, {
+            await setDoc(trilhaRef, {
               ...data,
               days: updatedDays,
               lastAccessDate: hojeStr,
             }, { merge: true });
           } else {
-            await updateDoc(trilhaRef, {
+            await setDoc(trilhaRef, {
               ...data,
               lastAccessDate: hojeStr,
             }, { merge: true });
@@ -280,15 +312,22 @@ export default function Dashboard() {
     <SafeAreaView style={styles.container}>
       <Animatable.View animation="fadeInLeft" style={styles.topBar}>
         <TouchableOpacity onPress={() => router.push("/Profile")}>
-          {profileImageUrl ? (
+          {profileImage ? (
             <Image
-              source={{ uri: profileImageUrl }}
+              source={profileImage}
               style={{ width: 45, height: 45, borderRadius: 22.5 }}
             />
           ) : (
             <Ionicons name="person-circle" size={45} color="#7B339C" />
           )}
         </TouchableOpacity>
+
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+          <TouchableOpacity onPress={() => setShowIntroModal(true)}>
+            <Ionicons name="information-circle-outline" size={28} color="#7B339C" />
+          </TouchableOpacity>
+        </View>
+        
       </Animatable.View>
       <ScrollView
         style={{ flex: 1 }}
@@ -500,6 +539,27 @@ export default function Dashboard() {
               style={styles.modalCancelButton}
             >
               <Text>Cancelar</Text>
+            </TouchableOpacity>
+          </View>
+        </KeyboardAvoidingView>
+      </Modal>
+
+      <Modal visible={showIntroModal} transparent animationType="fade">
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : undefined}
+          style={styles.modalOverlay}
+        >
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Bem-vindo(a) à sua trilha!</Text>
+            <Text style={{ textAlign: 'center', marginVertical: 10 }}>
+              Aqui você vai acompanhar seu progresso diário. Cada dia representa um pequeno desafio com sessões de respiração e foco. Aperte no icone do mapa para definir sua meta.
+            </Text>
+
+            <TouchableOpacity
+              onPress={() => setShowIntroModal(false)}
+              style={styles.modalButton}
+            >
+              <Text style={styles.modalButtonText}>Começar</Text>
             </TouchableOpacity>
           </View>
         </KeyboardAvoidingView>

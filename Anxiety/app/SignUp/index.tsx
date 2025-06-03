@@ -76,10 +76,14 @@ export default function SignUp() {
       const user = userCredential.user;
 
       // Salva nome e email do usuário no Firestore
-      await setDoc(doc(db, "users", user.uid), { name, email }, { merge: true });
+      await setDoc(
+        doc(db, "users", user.uid),
+        { name, email },
+        { merge: true }
+      );
 
       Alert.alert("Sucesso", "Conta criada com sucesso!");
-      router.push("/SignIn"); // Redireciona para tela de login
+      router.push("/Dashboard"); // Redireciona para tela de login
     } catch (error: any) {
       console.error(error);
       Alert.alert("Erro ao cadastrar", error.message);
@@ -94,12 +98,21 @@ export default function SignUp() {
         <Text style={styles.message}>Cadastre-se!</Text>
       </Animatable.View>
 
-      <Animatable.View delay={500} animation="fadeInUp" style={styles.containerForm}>
+      <Animatable.View
+        delay={500}
+        animation="fadeInUp"
+        style={styles.containerForm}
+      >
         {/* Campo Nome */}
         <Text style={styles.title}>Nome</Text>
         <TextInput
-          style={[styles.input, focusedField === "name" && styles.inputFocused]}
+          style={[
+            styles.input,
+            focusedField === "name" && styles.inputFocused,
+            { color: "black" },
+          ]}
           placeholder="Digite seu nome"
+          placeholderTextColor="#A9A9A9"
           value={name}
           onChangeText={setName}
           onFocus={() => setFocusedField("name")}
@@ -109,8 +122,13 @@ export default function SignUp() {
         {/* Campo Email */}
         <Text style={styles.title}>Email</Text>
         <TextInput
-          style={[styles.input, focusedField === "email" && styles.inputFocused]}
+          style={[
+            styles.input,
+            focusedField === "name" && styles.inputFocused,
+            { color: "black" },
+          ]}
           placeholder="Digite seu email"
+          placeholderTextColor="#A9A9A9"
           value={email}
           onChangeText={setEmail}
           keyboardType="email-address"
@@ -121,10 +139,16 @@ export default function SignUp() {
 
         {/* Campo Senha */}
         <Text style={styles.title}>Senha</Text>
-        <View style={[styles.passwordContainer, focusedField === "password" && styles.inputFocused]}>
+        <View
+          style={[
+            styles.passwordContainer,
+            focusedField === "password" && styles.inputFocused,
+          ]}
+        >
           <TextInput
-            style={styles.inputPassword}
+            style={[styles.inputPassword, { color: "black" }]}
             placeholder="Digite sua senha"
+            placeholderTextColor="#A9A9A9"
             secureTextEntry={hidePassword}
             value={password}
             onChangeText={setPassword}
@@ -132,41 +156,68 @@ export default function SignUp() {
             onBlur={() => setFocusedField(null)}
           />
           <TouchableOpacity onPress={() => setHidePassword(!hidePassword)}>
-            <Icon name={hidePassword ? "eye-off" : "eye"} size={25} color="black" />
+            <Icon
+              name={hidePassword ? "eye-off" : "eye"}
+              size={25}
+              color="black"
+            />
           </TouchableOpacity>
         </View>
 
         {/* Campo Confirmar Senha */}
         <Text style={styles.title}>Confirmar Senha</Text>
-        <View style={[styles.passwordContainer, focusedField === "confirm" && styles.inputFocused]}>
+        <View
+          style={[
+            styles.passwordContainer,
+            focusedField === "confirm" && styles.inputFocused,
+          ]}
+        >
           <TextInput
-            style={styles.inputPassword}
+            style={[styles.inputPassword, { color: "black" }]}
             placeholder="Confirme sua senha"
+            placeholderTextColor="#A9A9A9"
             secureTextEntry={hideConfirmPassword}
             value={confirmPassword}
             onChangeText={setConfirmPassword}
             onFocus={() => setFocusedField("confirm")}
             onBlur={() => setFocusedField(null)}
           />
-          <TouchableOpacity onPress={() => setHideConfirmPassword(!hideConfirmPassword)}>
-            <Icon name={hideConfirmPassword ? "eye-off" : "eye"} size={25} color="black" />
+          <TouchableOpacity
+            onPress={() => setHideConfirmPassword(!hideConfirmPassword)}
+          >
+            <Icon
+              name={hideConfirmPassword ? "eye-off" : "eye"}
+              size={25}
+              color="black"
+            />
           </TouchableOpacity>
         </View>
 
         {/* Botão de cadastro */}
-        <TouchableOpacity style={styles.button} onPress={handleSignUp} disabled={loading}>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={handleSignUp}
+          disabled={loading}
+        >
           {loading ? (
             <ActivityIndicator size="small" color="#FFF" />
           ) : (
-            <Animatable.Text animation="pulse" iterationCount="infinite" style={styles.buttonText}>
+            <Animatable.Text
+              animation="pulse"
+              iterationCount="infinite"
+              style={styles.buttonText}
+            >
               Cadastrar
             </Animatable.Text>
           )}
         </TouchableOpacity>
 
         {/* Link para tela de login */}
-        <TouchableOpacity style={styles.buttonRegister} onPress={() => router.push("/SignIn")}>
-          <Text style={styles.registerText}>Já possui uma conta? Faça login</Text>
+        <TouchableOpacity
+          style={styles.buttonRegister}
+          onPress={() => router.push("/SignIn")}
+        >
+          <Text>Já possui uma conta? Faça login</Text>
         </TouchableOpacity>
       </Animatable.View>
     </View>
