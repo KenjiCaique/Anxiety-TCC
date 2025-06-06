@@ -1,32 +1,47 @@
-import { Feather } from "@expo/vector-icons";
-import { useNavigation } from "@react-navigation/native";
-import { collection, doc, getDocs, query, setDoc } from "firebase/firestore";
+// React & React Native
 import { useEffect, useState } from "react";
 import { Alert, Modal, Text, TextInput, TouchableOpacity, View } from "react-native";
-import * as Animatable from "react-native-animatable";
-import { Calendar, DateData, LocaleConfig } from "react-native-calendars";
+
+// Navegação
+import { useNavigation } from "@react-navigation/native";
+import { useRouter } from 'expo-router';
+
+// Firebase
+import { collection, doc, getDocs, query, setDoc } from "firebase/firestore";
 import { auth, db } from "../../firebaseConfig";
 
-import { ptBR } from "../../localeCalendarConfig";
+// Estilo e Animações
+import { LinearGradient } from 'expo-linear-gradient';
+import * as Animatable from "react-native-animatable";
 import { styles } from "../../styles/calendarStyles";
 
-// Configuração do calendário em pt-BR
+// Calendário
+import { Calendar, DateData, LocaleConfig } from "react-native-calendars";
+import { ptBR } from "../../localeCalendarConfig";
+
+// Ícones
+import { Feather, Ionicons } from "@expo/vector-icons";
+
+// Configurações de idioma do calendário
 LocaleConfig.locales["pt-br"] = ptBR;
 LocaleConfig.defaultLocale = "pt-br";
 
 export default function CalendarScreen() {
+  const router = useRouter();
   const navigation = useNavigation();
+
   const [day, setDay] = useState<DateData>();
   const [moodColor, setMoodColor] = useState("");
   const [note, setNote] = useState("");
   const [marked, setMarked] = useState<Record<string, any>>({});
   const [modalVisible, setModalVisible] = useState(false);
   const [unsavedChanges, setUnsavedChanges] = useState(false);
+  const today = new Date().toISOString().split("T")[0];
 
   const userId = auth.currentUser?.uid;
 
+  // Busca os dados salvos do calendário no Firestore
   useEffect(() => {
-    // Carregar dados salvos do Firestore quando o componente monta
     const fetchMarkedDates = async () => {
       if (!userId) return;
 
@@ -44,9 +59,37 @@ export default function CalendarScreen() {
               selected: true,
               selectedColor: data.mood,
               note: data.note || "",
+              customStyles: {
+                container: {
+                  backgroundColor: "#fff",
+                  borderRadius: 10,
+                  borderWidth: 2,
+                  borderColor: data.mood,
+                },
+                text: {
+                  color: "#000",
+                  fontWeight: "bold",
+                },
+              },
             };
           }
         });
+
+        // Marca o dia de hoje, se não houver
+        if (!marks[today]) {
+          marks[today] = {
+            customStyles: {
+              container: {
+                backgroundColor: "#333",
+                borderRadius: 10,
+                opacity: 0.3,
+              },
+              text: {
+                color: "#ccc",
+              },
+            },
+          };
+        }
 
         setMarked(marks);
       } catch (err) {
@@ -57,6 +100,7 @@ export default function CalendarScreen() {
     fetchMarkedDates();
   }, [userId]);
 
+  // Voltar com alerta de alterações não salvas
   const handleBackPress = () => {
     if (unsavedChanges) {
       Alert.alert(
@@ -72,13 +116,15 @@ export default function CalendarScreen() {
     }
   };
 
+  // Opções de humor
   const moodOptions = [
-    { label: "Bom", color: "green" },
-    { label: "Neutro", color: "purple" },
-    { label: "Ruim", color: "orange" },
-    { label: "Muito Ruim", color: "red" },
+    { label: "😊 Bom", color: "#A0E7E5", emoji: "😊" },
+    { label: "😐 Neutro", color: "#FFDAC1", emoji: "😐" },
+    { label: "😞 Ruim", color: "#FF9AA2", emoji: "😞" },
+    { label: "😡 Muito Ruim", color: "#FF6F61", emoji: "😡" },
   ];
 
+  // Ao tocar em um dia do calendário
   const handleDayPress = (selectedDay: DateData) => {
     setDay(selectedDay);
     const data = marked[selectedDay.dateString];
@@ -92,6 +138,7 @@ export default function CalendarScreen() {
     setModalVisible(true);
   };
 
+  // Salvar humor e anotação no Firestore
   const handleSave = async () => {
     if (!day || !moodColor) {
       alert("Escolha um humor para salvar.");
@@ -121,8 +168,10 @@ export default function CalendarScreen() {
       await setDoc(doc(db, "users", userId, "calendar", day.dateString), {
         date: day.dateString,
         mood: moodColor,
+        emoji: moodOptions.find((opt) => opt.color === moodColor)?.emoji,
         note,
-      });
+      }, { merge: true });
+
       setUnsavedChanges(false);
       setModalVisible(false);
       alert("Salvo com sucesso!");
@@ -135,88 +184,133 @@ export default function CalendarScreen() {
     setMoodColor("");
   };
 
-  return (
-    <Animatable.View animation="fadeInUp" duration={600} style={styles.container}>
-      {/* Botão de voltar */}
-      <TouchableOpacity onPress={handleBackPress} style={{ marginBottom: 16 }}>
-        <Feather name="arrow-left" size={24} color="#e8e8e8" />
+  // Customização do dia no calendário
+  function CustomDay({ date, state, onPress, marking }) {
+    const isSelected = marking?.selected;
+    const moodColor = marking?.dotColor;
+
+    return (
+      <TouchableOpacity onPress={() => onPress(date)} activeOpacity={0.7}>
+        <View
+          style={{
+            borderWidth: 2,
+            borderColor: isSelected ? moodColor || "#3E2E45" : "#4a3b50",
+            borderRadius: 8,
+            padding: 6,
+            backgroundColor: isSelected ? moodColor || "#3E2E45" : "transparent",
+            width: 40,
+            height: 40,
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <Text
+            style={{
+              color: isSelected ? "#fff" : state === "disabled" ? "#aaa" : "#e8e8e8",
+              fontWeight: isSelected ? "bold" : "normal",
+            }}
+          >
+            {date.day}
+          </Text>
+        </View>
       </TouchableOpacity>
+    );
+  }
 
-      {/* Calendário */}
-      <Calendar
-        style={styles.calendar}
-        markedDates={marked}
-        onDayPress={handleDayPress}
-        renderArrow={(direction) => (
-          <Feather size={24} color="#e8e8e8" name={`chevron-${direction}`} />
-        )}
-        headerStyle={styles.calendarHeader}
-        theme={{
-          textMonthFontSize: 18,
-          monthTextColor: "#e8e8e8",
-          todayTextColor: "#3E2E45",
-          selectedDayBackgroundColor: "#3E2E45",
-          selectedDayTextColor: "#e8e8e8",
-          arrowColor: "#e8e8e8",
-          calendarBackground: "transparent",
-          textDayStyle: { color: "#e8e8e8" },
-          arrowStyle: { margin: 0, padding: 0 },
-        }}
-        hideExtraDays
-      />
+  // Render da tela principal
+  return (
+    <LinearGradient colors={['#1c0e2f', '#3a274d']} style={{ flex: 1 }}>
+      <Animatable.View animation="fadeInUp" duration={600} style={styles.container}>
+        <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
+          <Ionicons name="arrow-back" size={24} color="#fff" />
+        </TouchableOpacity>
 
-      {/* Anotação */}
-      {day?.dateString && note ? (
-        <View style={styles.annotationContainer}>
-          <Text style={styles.annotationTitle}>Anotação para {day.dateString}:</Text>
-          <Text style={styles.annotationText}>{note}</Text>
+        <View style={{ marginTop: 100, marginBottom: 20, paddingHorizontal: 24 }}>
+          <Text style={styles.titleH1}>Como foi seu dia hoje?</Text>
+          <Text style={styles.titleH2}>Registre seu humor e pensamentos</Text>
         </View>
-      ) : null}
 
-      {/* Modal */}
-      <Modal transparent visible={modalVisible} animationType="fade" onRequestClose={() => setModalVisible(false)}>
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContainer}>
-            <Text style={styles.modalTitle}>Como você se sentiu hoje?</Text>
+        <Calendar
+          style={styles.calendar}
+          markingType="custom"
+          markedDates={marked}
+          onDayPress={handleDayPress}
+          renderArrow={(direction) => (
+            <Feather size={24} color="#e8e8e8" name={`chevron-${direction}`} />
+          )}
+          headerStyle={styles.calendarHeader}
+          theme={{
+            textMonthFontSize: 18,
+            monthTextColor: "#e8e8e8",
+            todayTextColor: "#3E2E45",
+            selectedDayBackgroundColor: "#3E2E45",
+            selectedDayTextColor: "#e8e8e8",
+            arrowColor: "#e8e8e8",
+            calendarBackground: "transparent",
+            textDayStyle: { color: "#e8e8e8" },
+            arrowStyle: { margin: 0, padding: 0 },
+          }}
+          dayComponent={({ date, state, marking, onPress }) => (
+            <CustomDay date={date} state={state} marking={marking} onPress={onPress} />
+          )}
+          hideExtraDays
+        />
 
-            {moodOptions.map(({ label, color }) => (
-              <Text
-                key={label}
-                style={[
-                  styles.moodOption,
-                  {
-                    backgroundColor: moodColor === color ? color : "#4c3a50",
-                    color: moodColor === color ? "#fff" : "#e8e8e8",
-                    fontWeight: moodColor === color ? "bold" : "normal",
-                  },
-                ]}
-                onPress={() => setMoodColor(color)}
-              >
-                {label}
-              </Text>
-            ))}
-
-            <Text style={styles.inputLabel}>Escreva sobre o dia:</Text>
-            <TextInput
-              multiline
-              numberOfLines={4}
-              value={note}
-              onChangeText={setNote}
-              placeholder="Escreva aqui..."
-              placeholderTextColor="#aaa"
-              style={styles.input}
-            />
-
-            <TouchableOpacity onPress={handleSave} style={[styles.saveButton, { backgroundColor: "green", marginTop: 16 }]}>
-              <Text style={styles.saveButtonText}>Salvar</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity onPress={() => setModalVisible(false)} style={[styles.cancelButton, { marginTop: 8 }]}>
-              <Text style={styles.cancelButtonText}>Cancelar</Text>
-            </TouchableOpacity>
+        {/* Exibe anotação do dia */}
+        {day?.dateString && note ? (
+          <View style={styles.annotationContainer}>
+            <Text style={styles.annotationTitle}>Anotação para {day.dateString}:</Text>
+            <Text style={styles.annotationText}>{note}</Text>
           </View>
-        </View>
-      </Modal>
-    </Animatable.View>
+        ) : null}
+
+        {/* Modal de seleção de humor e anotação */}
+        <Modal transparent visible={modalVisible} animationType="fade" onRequestClose={() => setModalVisible(false)}>
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContainer}>
+              <Text style={styles.modalTitle}>Como você se sentiu hoje?</Text>
+
+              {moodOptions.map(({ label, color }) => (
+                <Text
+                  key={label}
+                  style={[
+                    styles.moodOption,
+                    {
+                      backgroundColor: moodColor === color ? color : "#4c3a50",
+                      color: moodColor === color ? "#fff" : "#e8e8e8",
+                      fontWeight: moodColor === color ? "bold" : "normal",
+                    },
+                  ]}
+                  onPress={() => setMoodColor(color)}
+                >
+                  {label}
+                </Text>
+              ))}
+
+              <Text style={styles.inputLabel}>Escreva sobre o dia:</Text>
+              <TextInput
+                multiline
+                numberOfLines={4}
+                value={note}
+                onChangeText={setNote}
+                placeholder="Escreva aqui..."
+                placeholderTextColor="#aaa"
+                style={styles.input}
+              />
+
+              <View style={styles.modalButtons}>
+                <TouchableOpacity onPress={handleSave} activeOpacity={0.7} style={[styles.buttonBox, { backgroundColor: "#A0E7E5" }]}>
+                  <Text style={styles.buttonText}>✅ Salvar</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity onPress={() => setModalVisible(false)} activeOpacity={0.7} style={[styles.buttonBox, { backgroundColor: "#FF9AA2" }]}>
+                  <Text style={styles.buttonText}>❌ Cancelar</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        </Modal>
+      </Animatable.View>
+    </LinearGradient>
   );
 }

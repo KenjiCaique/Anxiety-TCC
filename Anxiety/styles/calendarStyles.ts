@@ -3,12 +3,12 @@ import { StyleSheet } from "react-native";
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#320339",
     padding: 24,
   },
 
   calendar: {
     backgroundColor: "transparent",
+    marginTop: 80,
   },
 
   calendarHeader: {
@@ -19,8 +19,11 @@ export const styles = StyleSheet.create({
   },
 
   annotationContainer: {
-    marginTop: 20,
+    marginTop: 30,
     paddingHorizontal: 20,
+    backgroundColor: "#26152b",
+    paddingVertical: 12,
+    borderRadius: 10,
   },
 
   annotationTitle: {
@@ -84,25 +87,29 @@ export const styles = StyleSheet.create({
 
   modalButtons: {
     flexDirection: "row",
-    justifyContent: "space-between",
-    marginTop: 20,
+    justifyContent: "space-around",
+    marginTop: 24,
   },
 
   saveButton: {
-    backgroundColor: "green",
+    backgroundColor: "#32CD32",
     color: "white",
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 10,
     fontWeight: "bold",
+    flexDirection: "row",
+    alignItems: "center",
   },
   cancelButton: {
-    backgroundColor: "#aa0000",
+    backgroundColor: "#C94C4C",
     color: "white",
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 10,
     fontWeight: "bold",
+    flexDirection: "row",
+    alignItems: "center",
   },
 
   saveButtonText: {
@@ -115,4 +122,71 @@ export const styles = StyleSheet.create({
     fontWeight: "bold",
     fontSize: 16,
   },
+  backButton: {
+    position: 'absolute',
+    top: 40,
+    left: 20,
+    zIndex: 10,
+  },
+  pageTitle: {
+    color: "#e8e8e8",
+    fontSize: 22,
+    fontWeight: "bold",
+    textAlign: "center",
+    marginTop: 70,
+    marginBottom: 20,
+  },
+  actionBox: {
+    backgroundColor: "#32CD32",
+    width: "45%",
+    paddingVertical: 12,
+    borderRadius: 12,
+    alignItems: "center",
+    justifyContent: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 4,
+    flexDirection: "column",
+  },
+  buttonLabel: {
+    color: "#fff",
+    fontWeight: "bold",
+    fontSize: 14,
+    marginTop: 4,
+  },
+  titleH1: {
+    fontSize: 26,
+    fontWeight: "bold",
+    color: "#e8e8e8",
+    textAlign: "center",
+    marginBottom: 6,
+  },
+
+  titleH2: {
+    fontSize: 18,
+    fontWeight: "600",
+    color: "#ccc",
+    textAlign: "center",
+  },
+
+  buttonBox: {
+  borderRadius: 12,
+  paddingVertical: 12,
+  paddingHorizontal: 20,
+  alignItems: "center",
+  marginTop: 10,
+  shadowColor: "#000",
+  shadowOffset: { width: 0, height: 2 },
+  shadowOpacity: 0.3,
+  shadowRadius: 4,
+  elevation: 5,
+},
+
+buttonText: {
+  color: "#000",
+  fontSize: 16,
+  fontWeight: "bold",
+},
 });

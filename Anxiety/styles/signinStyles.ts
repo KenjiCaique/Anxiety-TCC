@@ -52,9 +52,6 @@ export const styles = StyleSheet.create({
       marginTop: 10,
       alignSelf: 'center'
     },
-    registerText:{
-      color: '#a1a1a1'
-    },
     titleWithIcon: {
       flexDirection: 'row',
       alignItems: 'center',

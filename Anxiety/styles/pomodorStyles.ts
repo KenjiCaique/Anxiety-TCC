@@ -92,4 +92,10 @@ export const styles = StyleSheet.create({
         height: '100%',
         zIndex: -1,
     },
+    backButton: {
+        position: 'absolute',
+        top: 40,
+        left: 20,
+        zIndex: 10,
+      },
 });

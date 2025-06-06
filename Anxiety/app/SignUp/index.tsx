@@ -1,7 +1,15 @@
+// React e hooks
+import React, { useState } from "react";
+
+// Navegação com Expo Router
 import { useRouter } from "expo-router";
+
+// Firebase: autenticação e Firestore
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
-import React, { useState } from "react";
+import { auth, db } from "../../firebaseConfig";
+
+// Componentes e APIs do React Native
 import {
   ActivityIndicator,
   Alert,
@@ -10,12 +18,18 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+
+// Animações com react-native-animatable
 import * as Animatable from "react-native-animatable";
+
+// Ícones vetoriais
 import Icon from "react-native-vector-icons/Ionicons";
-import { auth, db } from "../../firebaseConfig";
+
+// Estilos externos
 import { styles } from "../../styles/signupStyles";
 
 export default function SignUp() {
+  // Estados dos campos do formulário
   const [name, setName] = useState<string>("");
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
@@ -27,23 +41,33 @@ export default function SignUp() {
 
   const router = useRouter();
 
+  /**
+   * Valida os campos e tenta criar uma nova conta com email e senha.
+   * Também salva o nome e email do usuário no Firestore.
+   * Exibe alertas para erros e sucesso.
+   */
   const handleSignUp = async () => {
+    // Verifica se todos os campos obrigatórios foram preenchidos
     if (!name || !email || !password) {
       Alert.alert("Erro", "Preencha todos os campos!");
       return;
     }
 
+    // Validação básica do formato do email
     if (!/\S+@\S+\.\S+/.test(email)) {
       Alert.alert("Email inválido", "Digite um email válido!");
       return;
     }
 
+    // Verifica se as senhas coincidem
     if (password !== confirmPassword) {
       return Alert.alert("As senhas não coincidem!");
     }
 
     try {
       setLoading(true);
+
+      // Cria usuário com email e senha no Firebase Auth
       const userCredential = await createUserWithEmailAndPassword(
         auth,
         email,
@@ -51,10 +75,15 @@ export default function SignUp() {
       );
       const user = userCredential.user;
 
-      await setDoc(doc(db, "users", user.uid), { name, email });
+      // Salva nome e email do usuário no Firestore
+      await setDoc(
+        doc(db, "users", user.uid),
+        { name, email },
+        { merge: true }
+      );
 
       Alert.alert("Sucesso", "Conta criada com sucesso!");
-      router.push("/Dashboard");
+      router.push("/Dashboard"); // Redireciona para tela de login
     } catch (error: any) {
       console.error(error);
       Alert.alert("Erro ao cadastrar", error.message);
@@ -74,23 +103,32 @@ export default function SignUp() {
         animation="fadeInUp"
         style={styles.containerForm}
       >
+        {/* Campo Nome */}
         <Text style={styles.title}>Nome</Text>
         <TextInput
-          style={[styles.input, focusedField === "name" && styles.inputFocused]}
+          style={[
+            styles.input,
+            focusedField === "name" && styles.inputFocused,
+            { color: "black" },
+          ]}
           placeholder="Digite seu nome"
+          placeholderTextColor="#A9A9A9"
           value={name}
           onChangeText={setName}
           onFocus={() => setFocusedField("name")}
           onBlur={() => setFocusedField(null)}
         />
 
+        {/* Campo Email */}
         <Text style={styles.title}>Email</Text>
         <TextInput
           style={[
             styles.input,
-            focusedField === "email" && styles.inputFocused,
+            focusedField === "name" && styles.inputFocused,
+            { color: "black" },
           ]}
           placeholder="Digite seu email"
+          placeholderTextColor="#A9A9A9"
           value={email}
           onChangeText={setEmail}
           keyboardType="email-address"
@@ -99,6 +137,7 @@ export default function SignUp() {
           onBlur={() => setFocusedField(null)}
         />
 
+        {/* Campo Senha */}
         <Text style={styles.title}>Senha</Text>
         <View
           style={[
@@ -107,8 +146,9 @@ export default function SignUp() {
           ]}
         >
           <TextInput
-            style={styles.inputPassword}
+            style={[styles.inputPassword, { color: "black" }]}
             placeholder="Digite sua senha"
+            placeholderTextColor="#A9A9A9"
             secureTextEntry={hidePassword}
             value={password}
             onChangeText={setPassword}
@@ -124,6 +164,7 @@ export default function SignUp() {
           </TouchableOpacity>
         </View>
 
+        {/* Campo Confirmar Senha */}
         <Text style={styles.title}>Confirmar Senha</Text>
         <View
           style={[
@@ -132,8 +173,9 @@ export default function SignUp() {
           ]}
         >
           <TextInput
-            style={styles.inputPassword}
+            style={[styles.inputPassword, { color: "black" }]}
             placeholder="Confirme sua senha"
+            placeholderTextColor="#A9A9A9"
             secureTextEntry={hideConfirmPassword}
             value={confirmPassword}
             onChangeText={setConfirmPassword}
@@ -151,6 +193,7 @@ export default function SignUp() {
           </TouchableOpacity>
         </View>
 
+        {/* Botão de cadastro */}
         <TouchableOpacity
           style={styles.button}
           onPress={handleSignUp}
@@ -169,13 +212,12 @@ export default function SignUp() {
           )}
         </TouchableOpacity>
 
+        {/* Link para tela de login */}
         <TouchableOpacity
           style={styles.buttonRegister}
           onPress={() => router.push("/SignIn")}
         >
-          <Text style={styles.registerText}>
-            Já possui uma conta? Faça login
-          </Text>
+          <Text>Já possui uma conta? Faça login</Text>
         </TouchableOpacity>
       </Animatable.View>
     </View>

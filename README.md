@@ -1,109 +1,238 @@
+
 # Anxiety-TCC
-Trabalho conclusão de curso Desenvolvimentos de Sistemas
 
-    Versão dos aplicativos utilizados:
-        - Node.js versão: 22.14.0
-        - Reactive Native versão: 0.79.2 
-        - Expo versão: SDK 53
-        - Visual Studio Code ultima versão sempre necessária 
-        - Firebase (não existe versão especificada)
+**Trabalho de Conclusão de Curso - Desenvolvimento de Sistemas**
 
-# Índice
+## ✅ Versão dos Aplicativos Utilizados:
 
-      1. Visão Geral
+- **Node.js**: 22.14.0  
+- **React Native**: 0.79.2  
+- **Expo SDK**: 53  
+- **Visual Studio Code**: Última versão recomendada  
+- **Firebase**: (sem versão específica)
 
-      2. Tecnologias Usadas
+---
 
-      3.  Instalação e Configuração
+## 📚 Índice
 
-      4.  Estrutura do Projeto
+1. [Visão Geral](#1-visão-geral)  
+2. [Tecnologias Usadas](#2-tecnologias-usadas)  
+3. [Instalação e Configuração](#3-instalação-e-configuração)  
+4. [Estrutura do Projeto](#4-estrutura-do-projeto)  
+5. [Componentes](#5-componentes)  
+6. [Rotas e Navegação](#6-rotas-e-navegação)  
+7. [Gerenciamento de Estado](#7-gerenciamento-de-estado)  
+8. [Scripts e Comandos](#8-scripts-e-comandos)  
+9. [Testes](#9-testes)  
+10. [Contribuindo](#10-contribuindo)  
+11. [Licença](#11-licença)  
 
-      5.  Componentes
+---
 
-      6.  Rotas e Navegação
+## 1. Visão Geral
 
-    7. Gerenciamento de Estado
+Este projeto é uma aplicação Android construída com **Expo (React Native)**.  
+Tem como objetivo fornecer uma plataforma para **gerenciamento da ansiedade**, com foco em técnicas de relaxamento que auxiliam durante os estudos.
 
-    8. Scripts e Comandos
+---
 
-    9. Testes
+## 2. Tecnologias Usadas
 
-    10. Contribuindo
+- **React Native**: Framework JavaScript para construção da interface do usuário.  
+- **Expo**: Plataforma para apps React Native com APIs prontas.  
+- **Firebase**: Backend com autenticação, banco de dados e armazenamento em nuvem.  
+- **Node.js**: Usado para executar scripts e gerenciar dependências.  
+- **Visual Studio Code**: Editor de código recomendado com suporte a plugins e depuração.
 
-    11. Licença
+---
 
-# Visão Geral
+## 3. Instalação e Configuração
 
-     Este projeto é uma aplicação android construída com React Native. Ele tem como objetivo fornecer uma plataforma para gereciamento de controle de ansiedade. O projeto permite que os usuários consiga auxiliar
-    sua ansiedade com tecnicas de relaxamento durante os estudos.
+### 1. Clonar o Repositório
 
-# Tecnologias Usadas
+```bash
+git clone https://github.com/KenjiCaique/Anxiety-TCC.git
+```
 
-        ° React Native: Framework Javascript para construção da interface do usuário
-        ° Expo: Framework do Reactive Native tendo uma grande bliblioteca e APIs
-        ° Firebase: É um banco de dados e hospedagem em nuvem da google
-        ° Node.js: Usado pelo Framework Reative native para funções de algumas blibliotecas
-        ° Visual Studio Code: É um editor de texto/código com melhor visibilidade e amplos jeitos de personalização
+### 2. Instalar Dependências
 
-        
-# Instalação e Configuração
+```bash
+cd Anxiety-TCC
+npm install
+# ou
+yarn install
+```
 
-1. Clonar o Repositório
+### 3. Rodar o Projeto
 
-        Git bash:
-            git clone https://github.com/KenjiCaique/Anxiety-TCC.git
+```bash
+npx expo start
+```
 
-2. Verificar as Dependências
+### 4. Acessar no navegador
 
-        abra o cmd na pasta 
-            npm install
-            # ou
-            yarn install
+```
+http://localhost:<porta>
+```
 
-3. Rodar o Projeto
+---
 
-        npm start
+## 4. Estrutura do Projeto
 
-4. Abrir o projeto na web
+```
+Anxiety/
+├── .vscode/                    # Configurações do VSCode
+├── app/                        # Telas e navegação principal
+│   ├── Calendar/
+│   │   └── index.tsx
+│   ├── Dashboard/
+│   │   └── index.tsx
+│   ├── Pomodoro/
+│   │   └── index.tsx
+│   ├── Profile/
+│   │   └── index.tsx
+│   ├── Respiracao/
+│   │   └── index.tsx
+│   ├── SignIn/
+│   │   └── index.tsx
+│   ├── SignUp/
+│   │   └── index.tsx
+│   ├── UpdatePassword/
+│   │   └── index.tsx
+│   ├── Welcome/
+│   │   └── index.tsx
+│   ├── _layout.tsx
+│   └── index.tsx
+├── assets/
+├── images/
+├── styles/
+├── firebaseConfig.ts
+├── localeCalendarConfig.ts
+├── package.json
+├── tsconfig.json
+├── app.json
+├── eslint.config.js
+├── .gitignore
+└── README.md
+```
 
-        http://localhost: (porta definida)
+---
 
- # Estrutura do Projeto 
+## 5. Componentes
 
+A estrutura de componentes é organizada em pastas dentro da pasta `app/`, cada uma representando uma funcionalidade:
 
+### 📅 `Calendar/`  
+Exibe o progresso diário do usuário via calendário.  
+Utiliza `localeCalendarConfig.ts` para localização.
 
- # Componentes 
+### 📊 `Dashboard/`  
+Tela principal após login, com resumo e atalhos para funcionalidades como Pomodoro, respiração e progresso.
 
+### ⏱ `Pomodoro/`  
+Implementa a técnica de foco com temporizador Pomodoro e intervalos de descanso.
 
- # Rotas e Navegação
+### 👤 `Profile/`  
+Exibe informações do usuário, configurações e botão de logout.
 
+### 🌬 `Respiracao/`  
+Tela com instruções visuais e exercícios guiados de respiração.
 
+### 🔐 `SignIn/` e `SignUp/`  
+Telas de login e cadastro integradas ao Firebase Authentication.
 
- # Gerenciamento de Estado 
- foram usados 
+### 🔁 `UpdatePassword/`  
+Permite redefinição de senha via Firebase com envio de e-mail.
 
+### 🎉 `Welcome/`  
+Tela inicial (onboarding) que introduz o app e direciona para login ou cadastro.
 
+---
 
-# Scripts e Comandos
+## 6. Rotas e Navegação
 
+A navegação é feita com o **Expo Router**, que utiliza a estrutura de pastas como base de rotas:
 
-# Testes
+```
+app/
+├── Calendar/
+│   └── index.tsx        -> /Calendar
+├── Dashboard/
+│   └── index.tsx        -> /Dashboard
+├── Pomodoro/
+│   └── index.tsx        -> /Pomodoro
+├── Profile/
+│   └── index.tsx        -> /Profile
+├── Respiracao/
+│   └── index.tsx        -> /Respiracao
+├── SignIn/
+│   └── index.tsx        -> /SignIn
+├── SignUp/
+│   └── index.tsx        -> /SignUp
+├── UpdatePassword/
+│   └── index.tsx        -> /UpdatePassword
+├── Welcome/
+│   └── index.tsx        -> /Welcome
+├── _layout.tsx          -> Define o layout padrão
+└── index.tsx            -> Rota inicial (/)
+```
 
-Testes são feitos periodicamentes com base nos andamentos das versões do aplicativos. 
+---
 
-testes realizados:
+## 7. Gerenciamento de Estado
 
-Jest: Para testes unitários e de funções.
+A aplicação utiliza **hooks nativos do React** para controle de estado:
 
-React Native Testing Library: Para testes de interação com a interface do usuário.
+- `useState`: Armazena estados locais como inputs, login, progresso, etc.
+- `useEffect`: Executa efeitos como chamadas assíncronas e integração com Firebase.
 
-Detox: Para testes end-to-end (E2E) em dispositivos reais ou emuladores.
+### Exemplo:
 
-# Contribuindo 
+```tsx
+const [progresso, setProgresso] = useState(0);
 
+useEffect(() => {
+  const carregarProgresso = async () => {
+    const dados = await buscarProgressoDoFirebase();
+    setProgresso(dados);
+  };
+  carregarProgresso();
+}, []);
+```
 
-# Licença
+---
 
-    
-    
+## 8. Scripts e Comandos
 
+```bash
+npx expo start     # Inicia o projeto no Expo
+```
+
+---
+
+## 9. Testes
+
+Os testes são realizados conforme o avanço das versões.
+---
+
+## 10. Contribuindo
+
+Este projeto foi desenvolvido em grupo como parte do Trabalho de Conclusão de Curso (TCC) do curso de **Desenvolvimento de Sistemas**.
+
+### 👨‍💻 Integrantes do Grupo:
+
+- **Isaac Yan de Melo M. A.** – Interface com React Native/Expo, lógica da aplicação e integração com Firebase  
+- **Caique Kenji Y.** – Interface com React Native/Expo, testes e responsividade  
+- **Alison das Neves S.** – Documentação geral  
+- **Leonardo Messias I.** – Interface com React Native/Expo e testes  
+
+Todos participaram ativamente do desenvolvimento e das decisões do projeto.
+
+---
+
+## 11. Licença
+
+Este projeto está licenciado sob a **Licença MIT**.  
+Consulte o arquivo `LICENSE` para mais informações.
+
+---
