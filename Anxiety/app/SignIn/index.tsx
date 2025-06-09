@@ -24,12 +24,16 @@ export default function SignIn() {
   const router = useRouter();
 
   const handleLogin = () => {
+    if (!email || !password) {
+      Alert.alert("Erro", "Preencha todos os campos.");
+      return;
+    }
+
     signInWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         router.push("/Dashboard");
       })
       .catch((error) => {
-        Alert.alert("Erro no login:", error.message);
         let message = "Ocorreu um erro. Tente novamente.";
 
         if (error.code === "auth/user-not-found") {
@@ -82,7 +86,12 @@ export default function SignIn() {
         >
           <Text>Não possui uma conta? Cadastre-se</Text>
         </TouchableOpacity>
+
+        <TouchableOpacity style={styles.buttonSenha} onPress={() => router.push('/UpdatePassword')}>
+          <Text>Esqueceu a senha?</Text>
+        </TouchableOpacity>
       </Animatable.View>
+
     </View>
   );
 }

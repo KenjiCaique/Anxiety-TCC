@@ -35,7 +35,11 @@ export default function Profile() {
     'profile1.png': require('../../images/axolote1.jpg'),
     'profile2.png': require('../../images/axolote2.jpg'),
     'profile3.png': require('../../images/axolote3.jpg'),
-    'profile4.png': require('../../images/axolote4.jpg')
+    'profile4.png': require('../../images/axolote4.jpg'),
+    'profile5.png': require('../../images/axolote5.png'),
+    'profile6.png': require('../../images/axolote6.jpg'),
+    'profile7.png': require('../../images/axolote7.jpg'),
+    'profile8.png': require('../../images/axolote8.jpg'),
   };
   const imageNames = Object.keys(imageOptions);
 
@@ -200,11 +204,6 @@ export default function Profile() {
 
       {/* Botões para alterar senha e logout */}
       <View style={{ width: '100%', marginTop: 20 }}>
-        <TouchableOpacity style={styles.button} onPress={() => router.push('/UpdatePassword')}>
-          <Ionicons name="key-outline" size={20} color="#fff" style={{ marginRight: 8 }} />
-          <Text style={styles.buttonText}>Alterar Senha</Text>
-        </TouchableOpacity>
-
         <TouchableOpacity style={styles.button} onPress={handleLogout}>
           <Ionicons name="log-out-outline" size={20} color="#fff" style={{ marginRight: 8 }} />
           <Text style={styles.buttonText}>Logout</Text>

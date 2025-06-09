@@ -6,6 +6,7 @@ import {
   Alert,
   Dimensions,
   Image,
+  ImageBackground,
   ImageSourcePropType,
   KeyboardAvoidingView,
   Modal,
@@ -16,7 +17,6 @@ import {
   TextInput,
   TouchableOpacity,
   View,
-  ImageBackground,           // ← Import necessário
 } from "react-native";
 import * as Animatable from "react-native-animatable";
 import { styles } from '../../styles/dashboardStyles';
@@ -26,7 +26,7 @@ import { doc, getDoc, setDoc } from "firebase/firestore";
 import { db } from "../../firebaseConfig";
 
 // Import da imagem de fundo (supondo que você colocou em src/images)
-import backgroundImage from '../../images/logo.png'; 
+import backgroundImage from '../../images/logo.png';
 
 async function salvarProgressoNoUsuario(userId: string, trilhaId: string, progressoData: any) {
   const progressoRef = doc(db, "users", userId, "progressoTrilhas", trilhaId);
@@ -76,6 +76,10 @@ export default function Dashboard() {
     'profile2.png': require('../../images/axolote2.jpg'),
     'profile3.png': require('../../images/axolote3.jpg'),
     'profile4.png': require('../../images/axolote4.jpg'),
+    'profile5.png': require('../../images/axolote5.png'),
+    'profile6.png': require('../../images/axolote6.jpg'),
+    'profile7.png': require('../../images/axolote7.jpg'),
+    'profile8.png': require('../../images/axolote8.jpg'),
   };
 
   interface ProgressoData {

@@ -60,4 +60,7 @@ export const styles = StyleSheet.create({
       marginTop: 32,
       marginLeft: 5,
     },
+    buttonSenha:{
+      alignSelf: 'center'
+    },
   })

@@ -1,6 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import { signInWithEmailAndPassword, updatePassword } from "firebase/auth";
+import { sendPasswordResetEmail } from "firebase/auth";
 import React, { useState } from "react";
 import {
   Alert,
@@ -13,52 +13,52 @@ import {
 import * as Animatable from "react-native-animatable";
 import { auth } from "../../firebaseConfig";
 
-export default function PasswordChangeScreen() {
+export default function ResetPasswordScreen() {
   const router = useRouter();
   const [email, setEmail] = useState("");
-  const [currentPassword, setCurrentPassword] = useState("");
-  const [newPassword, setNewPassword] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
 
-  const handlePasswordChange = async () => {
-    if (!email || !currentPassword || !newPassword) {
-      Alert.alert("Erro", "Preencha todos os campos.");
+  const handleReset = async () => {
+    if (!email) {
+      Alert.alert("Erro", "Por favor, insira seu e-mail.");
       return;
     }
 
     try {
-      setLoading(true);
-
-      const userCredential = await signInWithEmailAndPassword(
-        auth,
-        email,
-        currentPassword
-      );
-      const user = userCredential.user;
-
-      await updatePassword(user, newPassword);
-
-      Alert.alert(
-        "Sucesso",
-        "Senha atualizada com sucesso! Faça login novamente."
-      );
-      await auth.signOut();
-      router.replace("/SignIn");
+      await sendPasswordResetEmail(auth, email);
+      setSuccess(true);
     } catch (error: any) {
-      console.error("Erro ao atualizar a senha:", error.code);
-      if (error.code === "auth/wrong-password") {
-        Alert.alert("Erro", "Senha atual incorreta.");
-      } else if (error.code === "auth/user-not-found") {
+      console.error("Erro ao enviar email de recuperação:", error.code);
+      if (error.code === "auth/user-not-found") {
         Alert.alert("Erro", "Usuário não encontrado.");
-      } else if (error.code === "auth/weak-password") {
-        Alert.alert("Erro", "A nova senha deve ter pelo menos 6 caracteres.");
+      } else if (error.code === "auth/invalid-email") {
+        Alert.alert("Erro", "E-mail inválido.");
       } else {
-        Alert.alert("Erro", "Não foi possível alterar a senha.");
+        Alert.alert("Erro", "Não foi possível enviar o email.");
       }
-    } finally {
-      setLoading(false);
     }
   };
+
+  if (success) {
+    return (
+      <Animatable.View
+        animation="fadeIn"
+        duration={800}
+        style={styles.successContainer}
+      >
+        <Ionicons name="mail-open" size={80} color="#7B339C" />
+        <Text style={styles.successText}>
+          Um link de redefinição foi enviado para seu e-mail.
+        </Text>
+        <TouchableOpacity
+          style={[styles.button, { marginTop: 20 }]}
+          onPress={() => router.replace("/SignIn")}
+        >
+          <Text style={styles.buttonText}>Voltar ao login</Text>
+        </TouchableOpacity>
+      </Animatable.View>
+    );
+  }
 
   return (
     <View style={{ flex: 1 }}>
@@ -71,41 +71,19 @@ export default function PasswordChangeScreen() {
         duration={600}
         style={styles.container}
       >
-        <Text style={styles.title}>Alterar Senha</Text>
+        <Text style={styles.title}>Recuperar Senha</Text>
 
         <TextInput
-          placeholder="Seu e-mail"
+          placeholder="Digite seu e-mail"
           value={email}
           onChangeText={setEmail}
-          style={styles.input}
           keyboardType="email-address"
           autoCapitalize="none"
-        />
-
-        <TextInput
-          placeholder="Senha atual"
-          value={currentPassword}
-          onChangeText={setCurrentPassword}
-          secureTextEntry
           style={styles.input}
         />
 
-        <TextInput
-          placeholder="Nova senha"
-          value={newPassword}
-          onChangeText={setNewPassword}
-          secureTextEntry
-          style={styles.input}
-        />
-
-        <TouchableOpacity
-          style={styles.button}
-          onPress={handlePasswordChange}
-          disabled={loading}
-        >
-          <Text style={styles.buttonText}>
-            {loading ? "Alterando..." : "Alterar Senha"}
-          </Text>
+        <TouchableOpacity style={styles.button} onPress={handleReset}>
+          <Text style={styles.buttonText}>Enviar email de recuperação</Text>
         </TouchableOpacity>
       </Animatable.View>
     </View>
@@ -146,11 +124,25 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 16,
     fontWeight: "600",
+    textAlign: "center",
   },
   backButton: {
     position: "absolute",
     top: 40,
     left: 20,
     zIndex: 10,
+  },
+  successContainer: {
+    flex: 1,
+    backgroundColor: "#FFF",
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 30,
+  },
+  successText: {
+    fontSize: 18,
+    marginTop: 10,
+    color: "#333",
+    textAlign: "center",
   },
 });
